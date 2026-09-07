@@ -297,12 +297,18 @@ export class OrderService {
   }
 
   /**
-   * Seller: Get all orders containing products made by the seller
+   * Seller & Admin: Get all orders containing products made by the seller (or all orders if Admin)
    */
-  static async getSellerOrders(sellerUserId: string, options: { page?: number; limit?: number }) {
-    const seller = await prisma.sellerProfile.findUnique({ where: { userId: sellerUserId } });
-    if (!seller) {
-      throw new AppError('Seller profile not found.', 404);
+  static async getSellerOrders(userId: string, options: { page?: number; limit?: number }) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    let whereClause: any = {};
+
+    if (user?.role !== UserRole.ADMIN) {
+      const seller = await prisma.sellerProfile.findUnique({ where: { userId } });
+      if (!seller) {
+        throw new AppError('Seller profile not found.', 404);
+      }
+      whereClause = { sellerId: seller.id };
     }
 
     const page = Math.max(1, Number(options.page) || 1);
@@ -310,9 +316,9 @@ export class OrderService {
     const skip = (page - 1) * limit;
 
     const [total, orderItems] = await Promise.all([
-      prisma.orderItem.count({ where: { sellerId: seller.id } }),
+      prisma.orderItem.count({ where: whereClause }),
       prisma.orderItem.findMany({
-        where: { sellerId: seller.id },
+        where: whereClause,
         skip,
         take: limit,
         orderBy: { order: { createdAt: 'desc' } },

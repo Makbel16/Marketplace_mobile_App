@@ -91,20 +91,41 @@ export default function CartScreen() {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor={ArtisanColors.background} />
 
+      {/* Luxury Branded Header */}
       <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>Shopping Cart</Text>
+        <View style={styles.headerMain}>
+          <View style={styles.headerTopRow}>
+            <View style={styles.eyebrowBadge}>
+              <Ionicons name="bag-check" size={11} color={ArtisanColors.primary} />
+              <Text style={styles.eyebrowText}>ETHICAL CHECKOUT</Text>
+            </View>
+            <View style={styles.countBadge}>
+              <Text style={styles.countBadgeText}>{totalItems} Items</Text>
+            </View>
+          </View>
+
+          <Text style={styles.title}>Artisan Basket</Text>
           <Text style={styles.subtitle}>
-            {totalItems} handmade item{totalItems === 1 ? '' : 's'} ready for checkout
+            Directly supporting independent master makers
           </Text>
         </View>
 
         {items.length > 0 && (
           <TouchableOpacity onPress={clearCart} style={styles.clearCartButton}>
-            <Text style={styles.clearCartText}>Clear All</Text>
+            <Ionicons name="trash-outline" size={15} color={ArtisanColors.danger} />
+            <Text style={styles.clearCartText}>Clear</Text>
           </TouchableOpacity>
         )}
       </View>
+
+      {/* Assurance Ribbon */}
+      {items.length > 0 && (
+        <View style={styles.assuranceRibbon}>
+          <Text style={styles.assuranceText}>
+            🌿 Direct Maker Support • 🛡️ Secure Checkout • 📦 Eco Packaging
+          </Text>
+        </View>
+      )}
 
       {items.length === 0 ? (
         <EmptyState
@@ -166,26 +187,86 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingTop: 16,
-    paddingBottom: 12,
+    paddingBottom: 10,
+  },
+  headerMain: {
+    flex: 1,
+  },
+  headerTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 6,
+  },
+  eyebrowBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(184, 93, 56, 0.12)',
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    gap: 4,
+  },
+  eyebrowText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: ArtisanColors.primary,
+    letterSpacing: 1.2,
+  },
+  countBadge: {
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: ArtisanColors.border,
+  },
+  countBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: ArtisanColors.textSecondary,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '800',
+    fontSize: 22,
+    fontWeight: '900',
     color: ArtisanColors.text,
+    letterSpacing: 0.3,
   },
   subtitle: {
     fontSize: 13,
     color: ArtisanColors.textSecondary,
     marginTop: 4,
+    lineHeight: 18,
   },
   clearCartButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 6,
     paddingHorizontal: 10,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: ArtisanColors.borderLight,
+    gap: 4,
   },
   clearCartText: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 12,
+    fontWeight: '700',
     color: ArtisanColors.danger,
+  },
+  assuranceRibbon: {
+    marginHorizontal: 16,
+    marginBottom: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: 'rgba(78, 110, 88, 0.08)',
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  assuranceText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: ArtisanColors.secondary,
   },
   content: {
     flex: 1,

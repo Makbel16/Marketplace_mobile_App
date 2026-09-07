@@ -9,6 +9,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { ArtisanColors } from '../../constants/colors';
 import { CategoryCard } from '../../components/marketplace/CategoryCard';
 import { ProductCard } from '../../components/marketplace/ProductCard';
@@ -99,10 +100,23 @@ export default function CategoriesScreen() {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor={ArtisanColors.background} />
 
+      {/* Branded Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Craft Categories</Text>
+        <View style={styles.headerTopRow}>
+          <View style={styles.eyebrowBadge}>
+            <Ionicons name="sparkles" size={11} color={ArtisanColors.gold} />
+            <Text style={styles.eyebrowText}>GUILDS & DISCIPLINES</Text>
+          </View>
+          {categories.length > 0 && (
+            <View style={styles.countBadge}>
+              <Text style={styles.countBadgeText}>{categories.length} Disciplines</Text>
+            </View>
+          )}
+        </View>
+
+        <Text style={styles.title}>Craft Collections</Text>
         <Text style={styles.subtitle}>
-          Browse by handmade discipline and cultural heritage
+          Explore centuries of heritage and handmade masterworks
         </Text>
       </View>
 
@@ -172,15 +186,51 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 12,
   },
-  title: {
-    fontSize: 24,
+  headerTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  eyebrowBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(197, 154, 69, 0.15)',
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    gap: 4,
+  },
+  eyebrowText: {
+    fontSize: 10,
     fontWeight: '800',
+    color: ArtisanColors.gold,
+    letterSpacing: 1.2,
+  },
+  countBadge: {
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: ArtisanColors.border,
+  },
+  countBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: ArtisanColors.textSecondary,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: '900',
     color: ArtisanColors.text,
+    letterSpacing: 0.3,
   },
   subtitle: {
     fontSize: 13,
     color: ArtisanColors.textSecondary,
     marginTop: 4,
+    lineHeight: 18,
   },
   listContent: {
     paddingHorizontal: 10,

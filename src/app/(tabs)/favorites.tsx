@@ -9,6 +9,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { ArtisanColors } from '../../constants/colors';
 import { ProductCard } from '../../components/marketplace/ProductCard';
 import { LoadingState } from '../../components/feedback/LoadingState';
@@ -23,10 +24,22 @@ export default function FavoritesScreen() {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor={ArtisanColors.background} />
 
+      {/* Luxury Branded Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Your Wishlist</Text>
+        <View style={styles.headerTopRow}>
+          <View style={styles.eyebrowBadge}>
+            <Ionicons name="heart" size={11} color={ArtisanColors.primary} />
+            <Text style={styles.eyebrowText}>CURATED VAULT</Text>
+          </View>
+
+          <View style={styles.countBadge}>
+            <Text style={styles.countBadgeText}>{favorites.length} Saved</Text>
+          </View>
+        </View>
+
+        <Text style={styles.title}>Saved Treasures</Text>
         <Text style={styles.subtitle}>
-          Handmade treasures you&apos;ve saved for later ({favorites.length})
+          Handpicked creations waiting for your personal collection
         </Text>
       </View>
 
@@ -35,8 +48,8 @@ export default function FavoritesScreen() {
       ) : favorites.length === 0 ? (
         <EmptyState
           icon="heart-outline"
-          title="Your Wishlist is Empty"
-          message="Explore unique pottery, woven clothing, and handcrafted jewelry, then tap the heart icon to save them here."
+          title="Your Vault is Empty"
+          message="Explore unique pottery, woven textiles, and handcrafted jewelry, then tap the heart icon to save them here."
           actionTitle="Explore Marketplace"
           onAction={() => router.push('/(tabs)' as any)}
         />
@@ -76,15 +89,51 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 12,
   },
-  title: {
-    fontSize: 24,
+  headerTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  eyebrowBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(184, 93, 56, 0.12)',
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    gap: 4,
+  },
+  eyebrowText: {
+    fontSize: 10,
     fontWeight: '800',
+    color: ArtisanColors.primary,
+    letterSpacing: 1.2,
+  },
+  countBadge: {
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: ArtisanColors.border,
+  },
+  countBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: ArtisanColors.textSecondary,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: '900',
     color: ArtisanColors.text,
+    letterSpacing: 0.3,
   },
   subtitle: {
     fontSize: 13,
     color: ArtisanColors.textSecondary,
     marginTop: 4,
+    lineHeight: 18,
   },
   listContent: {
     paddingHorizontal: 16,

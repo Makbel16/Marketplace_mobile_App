@@ -36,6 +36,15 @@ export default function ProfileScreen() {
       <StatusBar barStyle="dark-content" backgroundColor={ArtisanColors.background} />
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Luxury Branded Header */}
+        <View style={styles.header}>
+          <View style={styles.eyebrowBadge}>
+            <Ionicons name="person-circle-outline" size={12} color={ArtisanColors.gold} />
+            <Text style={styles.eyebrowText}>ARTISAN COMMUNITY</Text>
+          </View>
+          <Text style={styles.headerTitle}>Account & Guild</Text>
+        </View>
+
         {/* User Card */}
         {user ? (
           <View style={styles.userCard}>
@@ -182,6 +191,32 @@ const styles = StyleSheet.create({
   content: {
     padding: 16,
     paddingBottom: 40,
+  },
+  header: {
+    marginBottom: 16,
+  },
+  eyebrowBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(197, 154, 69, 0.15)',
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+    gap: 4,
+    marginBottom: 4,
+  },
+  eyebrowText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: ArtisanColors.gold,
+    letterSpacing: 1.2,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: ArtisanColors.text,
+    letterSpacing: 0.3,
   },
   userCard: {
     flexDirection: 'row',
