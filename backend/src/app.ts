@@ -46,7 +46,16 @@ app.get('/api/health', (req: Request, res: Response) => {
   });
 });
 
-// API Routes will be mounted here in subsequent phases
+import authRoutes from './routes/authRoutes';
+import categoryRoutes from './routes/categoryRoutes';
+import productRoutes from './routes/productRoutes';
+import uploadRoutes from './routes/uploadRoutes';
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // 404 handler for unknown routes
 app.use(notFoundHandler);
