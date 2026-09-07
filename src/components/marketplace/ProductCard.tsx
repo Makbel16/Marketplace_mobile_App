@@ -10,7 +10,7 @@ import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { Product } from '../../types';
 import { ArtisanColors } from '../../constants/colors';
-import { RatingStars } from '../ui/RatingStars';
+import { RatingStars } from '../ui';
 import { useFavorites } from '../../context/FavoritesContext';
 
 interface ProductCardProps {
