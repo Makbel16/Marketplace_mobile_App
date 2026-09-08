@@ -21,7 +21,6 @@
       },
       "predictiveBackGestureEnabled": false
     },
-
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"
@@ -40,6 +39,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "700d5879-6ac1-42e0-b156-917cf14ab9c6"
+      }
     }
   }
 }
