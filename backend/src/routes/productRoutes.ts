@@ -18,17 +18,17 @@ router.get('/', optionalAuth, productQueryValidator, validateRequest, ProductCon
 router.get(
   '/seller/inventory',
   authenticateUser,
-  requireRoles(UserRole.SELLER),
+  requireRoles(UserRole.SELLER, UserRole.ADMIN),
   ProductController.getSellerInventory
 );
 
 router.get('/:id', optionalAuth, ProductController.getProductById);
 
-// Protected routes: Create product (Seller only)
+// Protected routes: Create product (Seller or Admin)
 router.post(
   '/',
   authenticateUser,
-  requireRoles(UserRole.SELLER),
+  requireRoles(UserRole.SELLER, UserRole.ADMIN),
   createProductValidator,
   validateRequest,
   ProductController.createProduct

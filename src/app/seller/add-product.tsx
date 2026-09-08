@@ -8,14 +8,42 @@ import {
   SafeAreaView,
   StatusBar,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ArtisanColors } from '../../constants/colors';
 import { InputField } from '../../components/ui/InputField';
 import { PrimaryButton } from '../../components/ui/PrimaryButton';
 import { ApiClient } from '../../services/apiClient';
+import { API_BASE_URL } from '../../constants/api';
 import { Category, Product } from '../../types';
+
+const CRAFT_PRESETS = [
+  {
+    id: 'pottery',
+    name: '🏺 Pottery Vase',
+    url: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80',
+  },
+  {
+    id: 'leather',
+    name: '👜 Leather Bag',
+    url: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80',
+  },
+  {
+    id: 'jewelry',
+    name: '💍 Silver Ring',
+    url: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80',
+  },
+  {
+    id: 'textile',
+    name: '🧣 Woven Scarf',
+    url: 'https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?auto=format&fit=crop&w=800&q=80',
+  },
+];
 
 export default function AddProductScreen() {
   const router = useRouter();
@@ -25,8 +53,11 @@ export default function AddProductScreen() {
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState('10');
   const [categoryId, setCategoryId] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState(CRAFT_PRESETS[0].url);
+  const [previewUri, setPreviewUri] = useState<string | null>(CRAFT_PRESETS[0].url);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showManualUrl, setShowManualUrl] = useState(false);
 
   useEffect(() => {
     loadCategories();
@@ -42,6 +73,116 @@ export default function AddProductScreen() {
     } catch {
       // Ignored
     }
+  };
+
+  /**
+   * Pick image from phone gallery
+   */
+  const handlePickImage = async () => {
+    try {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert(
+          'Photo Permission Needed',
+          'Please allow access to your device photos to upload your artisan crafts.'
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.85,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const asset = result.assets[0];
+        setPreviewUri(asset.uri);
+        await uploadImageFile(asset.uri);
+      }
+    } catch (err: any) {
+      Alert.alert('Image Selection Error', err.message || 'Could not choose image');
+    }
+  };
+
+  /**
+   * Take photo using camera
+   */
+  const handleTakePhoto = async () => {
+    try {
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert(
+          'Camera Permission Needed',
+          'Please allow camera access to take a photo of your craft creation.'
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.85,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const asset = result.assets[0];
+        setPreviewUri(asset.uri);
+        await uploadImageFile(asset.uri);
+      }
+    } catch (err: any) {
+      Alert.alert('Camera Error', err.message || 'Could not capture photo');
+    }
+  };
+
+  /**
+   * Upload image file buffer to backend /api/upload/single
+   */
+  const uploadImageFile = async (localUri: string) => {
+    setIsUploadingImage(true);
+    try {
+      const filename = localUri.split('/').pop() || `craft-${Date.now()}.jpg`;
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+      const formData = new FormData();
+      formData.append('image', {
+        uri: localUri,
+        name: filename,
+        type,
+      } as any);
+
+      const token = await AsyncStorage.getItem('auth_token');
+      const uploadUrl = `${API_BASE_URL}/upload/single`;
+
+      const response = await fetch(uploadUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',
+        },
+        body: formData,
+      });
+
+      const json = await response.json();
+      if (!response.ok || !json.data) {
+        throw new Error(json.message || 'Upload failed');
+      }
+
+      const uploadedUrl = json.data.imageUrl;
+      setImageUrl(uploadedUrl);
+      setPreviewUri(uploadedUrl);
+      Alert.alert('Upload Complete! 📸', 'Craft image uploaded and ready for publishing.');
+    } catch (err: any) {
+      Alert.alert('Upload Error', `${err.message || 'Could not upload image'}. You can still use a preset craft photo.`);
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
+  const handleSelectPreset = (url: string) => {
+    setImageUrl(url);
+    setPreviewUri(url);
   };
 
   const handleCreateProduct = async () => {
@@ -65,15 +206,7 @@ export default function AddProductScreen() {
 
     setIsSubmitting(true);
     try {
-      const imagesPayload = imageUrl.trim()
-        ? [{ imageUrl: imageUrl.trim(), isPrimary: true }]
-        : [
-            {
-              imageUrl:
-                'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80',
-              isPrimary: true,
-            },
-          ];
+      const finalImage = imageUrl.trim() || CRAFT_PRESETS[0].url;
 
       await ApiClient.post<{ success: boolean; data: Product }>('/products', {
         name: name.trim(),
@@ -81,7 +214,7 @@ export default function AddProductScreen() {
         price: parsedPrice,
         stock: parsedStock,
         categoryId,
-        images: imagesPayload,
+        images: [{ imageUrl: finalImage, isPrimary: true }],
       });
 
       Alert.alert('Product Published! ✨', `"${name}" is now live in your artisan catalog.`, [
@@ -162,12 +295,103 @@ export default function AddProductScreen() {
           </View>
         </View>
 
-        <InputField
-          label="Primary Image URL"
-          value={imageUrl}
-          onChangeText={setImageUrl}
-          placeholder="https://images.unsplash.com/..."
-        />
+        {/* ============================================================ */}
+        {/* IMAGE UPLOAD SECTION                                          */}
+        {/* ============================================================ */}
+        <View style={styles.fieldWrapper}>
+          <Text style={styles.fieldLabel}>Craft Photo</Text>
+
+          {/* Photo Preview & Upload Card */}
+          <View style={styles.uploadCard}>
+            {previewUri ? (
+              <View style={styles.previewRow}>
+                <Image source={{ uri: previewUri }} style={styles.previewImage} contentFit="cover" />
+                <View style={styles.previewMeta}>
+                  <Text style={styles.previewTitle} numberOfLines={1}>
+                    {isUploadingImage ? 'Uploading photo...' : 'Photo Selected'}
+                  </Text>
+                  <Text style={styles.previewSubtitle}>
+                    {isUploadingImage ? 'Streaming to server...' : 'Ready for publishing'}
+                  </Text>
+                  {isUploadingImage ? (
+                    <ActivityIndicator size="small" color={ArtisanColors.primary} style={{ marginTop: 6, alignSelf: 'flex-start' }} />
+                  ) : (
+                    <TouchableOpacity onPress={handlePickImage} style={styles.changePhotoBtn}>
+                      <Ionicons name="camera-outline" size={14} color={ArtisanColors.primary} />
+                      <Text style={styles.changePhotoText}>Change Photo</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+            ) : (
+              <TouchableOpacity style={styles.emptyUploadBox} onPress={handlePickImage}>
+                <Ionicons name="cloud-upload-outline" size={32} color={ArtisanColors.primary} />
+                <Text style={styles.uploadPromptTitle}>Upload Craft Photo</Text>
+                <Text style={styles.uploadPromptSubtitle}>Tap to browse photos on your device</Text>
+              </TouchableOpacity>
+            )}
+
+            {/* Quick Action Buttons: Gallery & Camera */}
+            <View style={styles.photoActionRow}>
+              <TouchableOpacity
+                style={styles.photoActionBtn}
+                onPress={handlePickImage}
+                disabled={isUploadingImage}>
+                <Ionicons name="images-outline" size={16} color={ArtisanColors.primary} />
+                <Text style={styles.photoActionText}>Choose from Gallery</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.photoActionBtn}
+                onPress={handleTakePhoto}
+                disabled={isUploadingImage}>
+                <Ionicons name="camera-outline" size={16} color={ArtisanColors.secondary} />
+                <Text style={styles.photoActionText}>Take Photo</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Curated Craft Photo Presets */}
+            <View style={styles.presetsSection}>
+              <Text style={styles.presetsLabel}>Or choose a sample craft photo:</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.presetScroll}>
+                {CRAFT_PRESETS.map((preset) => {
+                  const isCurrent = imageUrl === preset.url;
+                  return (
+                    <TouchableOpacity
+                      key={preset.id}
+                      onPress={() => handleSelectPreset(preset.url)}
+                      style={[styles.presetChip, isCurrent && styles.presetChipActive]}>
+                      <Text style={[styles.presetChipText, isCurrent && styles.presetChipTextActive]}>
+                        {preset.name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </View>
+
+            {/* Optional Manual URL toggle */}
+            <TouchableOpacity
+              onPress={() => setShowManualUrl(!showManualUrl)}
+              style={styles.manualUrlToggle}>
+              <Text style={styles.manualUrlToggleText}>
+                {showManualUrl ? '▲ Hide URL input' : '▼ Or enter custom web image URL'}
+              </Text>
+            </TouchableOpacity>
+
+            {showManualUrl && (
+              <InputField
+                label="Custom Image URL"
+                value={imageUrl}
+                onChangeText={(val) => {
+                  setImageUrl(val);
+                  setPreviewUri(val);
+                }}
+                placeholder="https://images.unsplash.com/..."
+              />
+            )}
+          </View>
+        </View>
 
         <InputField
           label="Craft Story & Description"
@@ -183,6 +407,7 @@ export default function AddProductScreen() {
           title="Publish Product"
           onPress={handleCreateProduct}
           loading={isSubmitting}
+          disabled={isUploadingImage}
           size="large"
           style={styles.publishBtn}
         />
@@ -254,11 +479,147 @@ const styles = StyleSheet.create({
   halfField: {
     flex: 1,
   },
+  uploadCard: {
+    backgroundColor: ArtisanColors.surfaceSecondary,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: ArtisanColors.border,
+  },
+  previewRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: '#FFFFFF',
+    padding: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: ArtisanColors.borderLight,
+  },
+  previewImage: {
+    width: 72,
+    height: 72,
+    borderRadius: 10,
+    backgroundColor: ArtisanColors.surfaceSecondary,
+  },
+  previewMeta: {
+    flex: 1,
+  },
+  previewTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: ArtisanColors.text,
+  },
+  previewSubtitle: {
+    fontSize: 12,
+    color: ArtisanColors.textMuted,
+    marginTop: 2,
+  },
+  changePhotoBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 6,
+  },
+  changePhotoText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: ArtisanColors.primary,
+  },
+  emptyUploadBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 24,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    borderColor: ArtisanColors.border,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+  },
+  uploadPromptTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: ArtisanColors.text,
+    marginTop: 8,
+  },
+  uploadPromptSubtitle: {
+    fontSize: 12,
+    color: ArtisanColors.textMuted,
+    marginTop: 2,
+  },
+  photoActionRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 12,
+  },
+  photoActionBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: ArtisanColors.borderLight,
+    gap: 6,
+  },
+  photoActionText: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: ArtisanColors.text,
+  },
+  presetsSection: {
+    marginTop: 14,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: ArtisanColors.borderLight,
+  },
+  presetsLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: ArtisanColors.textSecondary,
+    marginBottom: 8,
+  },
+  presetScroll: {
+    flexDirection: 'row',
+  },
+  presetChip: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: ArtisanColors.border,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    marginRight: 8,
+  },
+  presetChipActive: {
+    backgroundColor: ArtisanColors.primary,
+    borderColor: ArtisanColors.primary,
+  },
+  presetChipText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: ArtisanColors.text,
+  },
+  presetChipTextActive: {
+    color: '#FFFFFF',
+  },
+  manualUrlToggle: {
+    alignSelf: 'center',
+    marginTop: 12,
+    paddingVertical: 4,
+  },
+  manualUrlToggleText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: ArtisanColors.textMuted,
+  },
   multilineInput: {
     minHeight: 90,
     textAlignVertical: 'top',
   },
   publishBtn: {
-    marginTop: 10,
+    marginTop: 14,
   },
 });

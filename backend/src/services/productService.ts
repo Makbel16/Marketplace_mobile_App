@@ -272,12 +272,19 @@ export class ProductService {
    * Create a new product (Artisan / Seller only)
    */
   static async createProduct(sellerUserId: string, dto: CreateProductDTO) {
-    const seller = await prisma.sellerProfile.findUnique({
+    let seller = await prisma.sellerProfile.findUnique({
       where: { userId: sellerUserId },
     });
 
     if (!seller) {
-      throw new AppError('Seller profile not found. You must be a registered seller to add products.', 403);
+      const user = await prisma.user.findUnique({ where: { id: sellerUserId } });
+      if (user?.role === UserRole.ADMIN) {
+        seller = await prisma.sellerProfile.findFirst({ where: { status: 'APPROVED' } });
+      }
+    }
+
+    if (!seller) {
+      throw new AppError('Seller profile not found. You must be a registered seller or admin to add products.', 403);
     }
 
     if (seller.status !== 'APPROVED') {
@@ -419,19 +426,25 @@ export class ProductService {
    * Seller: Get all products belonging to the seller's shop
    */
   static async getSellerProducts(sellerUserId: string, options: { page?: number; limit?: number }) {
-    const seller = await prisma.sellerProfile.findUnique({ where: { userId: sellerUserId } });
-    if (!seller) {
-      throw new AppError('Seller profile not found.', 404);
+    const user = await prisma.user.findUnique({ where: { id: sellerUserId } });
+    let whereClause: any = {};
+
+    if (user?.role !== UserRole.ADMIN) {
+      const seller = await prisma.sellerProfile.findUnique({ where: { userId: sellerUserId } });
+      if (!seller) {
+        throw new AppError('Seller profile not found.', 404);
+      }
+      whereClause = { sellerId: seller.id };
     }
 
     const page = Math.max(1, Number(options.page) || 1);
-    const limit = Math.min(50, Math.max(1, Number(options.limit) || 20));
+    const limit = Math.min(100, Math.max(1, Number(options.limit) || 20));
     const skip = (page - 1) * limit;
 
     const [total, products] = await Promise.all([
-      prisma.product.count({ where: { sellerId: seller.id } }),
+      prisma.product.count({ where: whereClause }),
       prisma.product.findMany({
-        where: { sellerId: seller.id },
+        where: whereClause,
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },

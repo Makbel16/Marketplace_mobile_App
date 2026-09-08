@@ -104,7 +104,7 @@ export default function CategoriesScreen() {
       <View style={styles.header}>
         <View style={styles.headerTopRow}>
           <View style={styles.eyebrowBadge}>
-            <Ionicons name="sparkles" size={11} color={ArtisanColors.gold} />
+            <Ionicons name="color-palette-outline" size={12} color={ArtisanColors.gold} />
             <Text style={styles.eyebrowText}>GUILDS & DISCIPLINES</Text>
           </View>
           {categories.length > 0 && (

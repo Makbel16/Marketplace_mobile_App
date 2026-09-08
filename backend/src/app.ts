@@ -1,3 +1,4 @@
+import path from 'path';
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -9,8 +10,12 @@ import { sendSuccess } from './utils/apiResponse';
 
 const app: Application = express();
 
-// Security HTTP headers
-app.use(helmet());
+// Security HTTP headers with relaxed CSP for web admin portal
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 
 // Cross-Origin Resource Sharing
 app.use(
@@ -64,6 +69,16 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/reviews', reviewRoutes);
+
+// Admin Web Dashboard
+const publicPath = path.join(__dirname, '../public');
+app.use(express.static(publicPath));
+app.get('/admin', (req: Request, res: Response) => {
+  res.sendFile(path.join(publicPath, 'admin/index.html'));
+});
+app.get('/admin/*', (req: Request, res: Response) => {
+  res.sendFile(path.join(publicPath, 'admin/index.html'));
+});
 
 // 404 handler for unknown routes
 app.use(notFoundHandler);

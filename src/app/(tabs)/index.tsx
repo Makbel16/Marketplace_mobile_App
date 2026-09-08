@@ -12,6 +12,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ArtisanColors } from '../../constants/colors';
+import { ArtisanLogo } from '../../components/ui';
 import { SearchBar } from '../../components/marketplace/SearchBar';
 import { CategoryCard } from '../../components/marketplace/CategoryCard';
 import { ProductCard } from '../../components/marketplace/ProductCard';
@@ -123,32 +124,20 @@ export default function HomeScreen() {
         {/* ============================================================ */}
         <View style={styles.headerContainer}>
           <View style={styles.topBar}>
-            {/* Brand Identity & Crest */}
-            <View style={styles.brandGroup}>
-              <View style={styles.brandCrest}>
-                <Ionicons name="sparkles" size={18} color="#FFFFFF" />
-              </View>
+            {/* Authentic Artisan Maker's Guild Logo */}
+            <ArtisanLogo style={styles.logoFlex} />
 
-              <View style={styles.brandTextGroup}>
-                <View style={styles.estRow}>
-                  <Text style={styles.estText}>EST. 2026</Text>
-                  <View style={styles.estDot} />
-                  <Text style={styles.estText}>HERITAGE GUILD</Text>
-                </View>
-                <View style={styles.titleRow}>
-                  <Text style={styles.brandTitleArtisan}>ARTISAN </Text>
-                  <Text style={styles.brandTitleMarket}>MARKETPLACE</Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Quick Action Navigation (Wishlist & Cart) */}
+            {/* Boutique Quick Action Buttons (Wishlist & Cart) */}
             <View style={styles.headerActions}>
               <TouchableOpacity
                 style={styles.actionButton}
                 activeOpacity={0.7}
                 onPress={() => router.push('/(tabs)/favorites' as any)}>
-                <Ionicons name="heart-outline" size={20} color={ArtisanColors.text} />
+                <Ionicons
+                  name={favorites.length > 0 ? 'heart' : 'heart-outline'}
+                  size={20}
+                  color={favorites.length > 0 ? ArtisanColors.primary : ArtisanColors.text}
+                />
                 {favorites.length > 0 && (
                   <View style={styles.actionBadge}>
                     <Text style={styles.actionBadgeText}>
@@ -162,7 +151,11 @@ export default function HomeScreen() {
                 style={[styles.actionButton, styles.cartButton]}
                 activeOpacity={0.7}
                 onPress={() => router.push('/(tabs)/cart' as any)}>
-                <Ionicons name="bag-handle-outline" size={20} color={ArtisanColors.text} />
+                <Ionicons
+                  name={totalItems > 0 ? 'bag-handle' : 'bag-handle-outline'}
+                  size={20}
+                  color={totalItems > 0 ? ArtisanColors.primary : ArtisanColors.text}
+                />
                 {totalItems > 0 && (
                   <View style={[styles.actionBadge, styles.cartBadge]}>
                     <Text style={styles.actionBadgeText}>
@@ -172,16 +165,6 @@ export default function HomeScreen() {
                 )}
               </TouchableOpacity>
             </View>
-          </View>
-
-          {/* Authenticity Guarantee Ribbon */}
-          <View style={styles.authenticityRibbon}>
-            <View style={styles.liveIndicator}>
-              <View style={styles.livePulseDot} />
-              <Text style={styles.liveText}>100% Certified Local Artisans</Text>
-            </View>
-            <Text style={styles.ribbonDivider}>•</Text>
-            <Text style={styles.ribbonSubtext}>🌿 Fair Trade & Ethical</Text>
           </View>
         </View>
 
@@ -204,7 +187,7 @@ export default function HomeScreen() {
           <View style={styles.heroBanner}>
             <View style={styles.heroContent}>
               <View style={styles.heroBadge}>
-                <Ionicons name="ribbon" size={12} color={ArtisanColors.gold} />
+                <Ionicons name="ribbon-outline" size={12} color={ArtisanColors.gold} />
                 <Text style={styles.heroBadgeText}>HANDMADE HERITAGE</Text>
               </View>
 
@@ -216,19 +199,19 @@ export default function HomeScreen() {
                 Every purchase sustains master potters, weavers, and leatherworkers worldwide.
               </Text>
 
-              {/* Trust Badges */}
+              {/* Trust Badges - Clean Vector Icons */}
               <View style={styles.heroTrustRow}>
                 <View style={styles.trustChip}>
-                  <Text style={styles.trustChipEmoji}>✋</Text>
-                  <Text style={styles.trustChipText}>100% Handmade</Text>
+                  <Ionicons name="hammer-outline" size={13} color="#FFFFFF" />
+                  <Text style={styles.trustChipText}>100% Handcrafted</Text>
                 </View>
                 <View style={styles.trustChip}>
-                  <Text style={styles.trustChipEmoji}>🌿</Text>
+                  <Ionicons name="leaf-outline" size={13} color="#FFFFFF" />
                   <Text style={styles.trustChipText}>Eco-Conscious</Text>
                 </View>
                 <View style={styles.trustChip}>
-                  <Text style={styles.trustChipEmoji}>📦</Text>
-                  <Text style={styles.trustChipText}>Secure Shipping</Text>
+                  <Ionicons name="shield-checkmark-outline" size={13} color="#FFFFFF" />
+                  <Text style={styles.trustChipText}>Fair Trade Verified</Text>
                 </View>
               </View>
             </View>
@@ -327,7 +310,7 @@ export default function HomeScreen() {
               <View style={styles.sectionHeader}>
                 <View>
                   <View style={styles.sectionTitleRow}>
-                    <Ionicons name="sparkles-outline" size={17} color={ArtisanColors.primary} />
+                    <Ionicons name="cube-outline" size={17} color={ArtisanColors.primary} />
                     <Text style={styles.sectionTitle}>
                       {selectedCategory
                         ? `${categories.find((c) => c.slug === selectedCategory)?.name || 'Craft'} Vault`
@@ -454,70 +437,16 @@ const styles = StyleSheet.create({
   headerContainer: {
     paddingHorizontal: 16,
     paddingTop: 14,
-    paddingBottom: 6,
+    paddingBottom: 4,
   },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  brandGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  logoFlex: {
     flex: 1,
-  },
-  brandCrest: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    backgroundColor: ArtisanColors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.4)',
-    elevation: 4,
-    shadowColor: ArtisanColors.primary,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.28,
-    shadowRadius: 5,
-  },
-  brandTextGroup: {
-    justifyContent: 'center',
-  },
-  estRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 2,
-  },
-  estText: {
-    fontSize: 9.5,
-    fontWeight: '800',
-    color: ArtisanColors.gold,
-    letterSpacing: 1.6,
-  },
-  estDot: {
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
-    backgroundColor: ArtisanColors.gold,
-    marginHorizontal: 5,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
-  brandTitleArtisan: {
-    fontSize: 20,
-    fontWeight: '900',
-    color: ArtisanColors.text,
-    letterSpacing: 0.8,
-  },
-  brandTitleMarket: {
-    fontSize: 20,
-    fontWeight: '900',
-    color: ArtisanColors.primary,
-    letterSpacing: 0.8,
+    marginRight: 10,
   },
 
   /* Action Buttons (Wishlist & Cart) */
@@ -566,44 +495,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 10,
     fontWeight: '800',
-  },
-
-  /* Authenticity Ribbon */
-  authenticityRibbon: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    backgroundColor: 'rgba(78, 110, 88, 0.08)',
-    borderRadius: 20,
-    alignSelf: 'flex-start',
-  },
-  liveIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  livePulseDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
-    backgroundColor: ArtisanColors.secondary,
-    marginRight: 6,
-  },
-  liveText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: ArtisanColors.secondary,
-  },
-  ribbonDivider: {
-    marginHorizontal: 6,
-    color: ArtisanColors.textMuted,
-    fontSize: 10,
-  },
-  ribbonSubtext: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: ArtisanColors.textSecondary,
   },
 
   /* Search Section */
@@ -675,10 +566,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 12,
-    gap: 4,
-  },
-  trustChipEmoji: {
-    fontSize: 11,
+    gap: 5,
   },
   trustChipText: {
     fontSize: 11,

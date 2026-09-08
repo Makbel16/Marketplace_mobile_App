@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artisan Marketplace — Web Admin & Seller Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #B85D38;
+      --primary-dark: #8F3F1E;
+      --primary-light: #FBEFEA;
+      --accent: #D97736;
+      --secondary: #4E6E58;
+      --secondary-light: #EEF3EF;
+      --bg: #FBF9F5;
+      --surface: #FFFFFF;
+      --surface-subtle: #F6F2EC;
+      --text: #221C18;
+      --text-secondary: #6E665F;
+      --text-muted: #9E958C;
+      --border: #EAE1D7;
+      --border-light: #F3EDE6;
+      --gold: #C59A45;
+      --danger: #C63D2F;
+      --danger-light: #FDECEC;
+      --success: #2B7A4B;
+      --success-light: #EAF5EE;
+      --shadow-sm: 0 2px 6px rgba(34, 28, 24, 0.05);
+      --shadow-md: 0 6px 18px rgba(34, 28, 24, 0.08);
+      --shadow-lg: 0 12px 32px rgba(34, 28, 24, 0.12);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4, .brand-font {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Top Navigation Bar */
+    header.navbar {
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand-container {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-crest {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 22px;
+      box-shadow: 0 4px 12px rgba(184, 93, 56, 0.3);
+    }
+
+    .brand-titles .est {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    .brand-titles .name {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-titles .name span {
+      color: var(--primary);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background-color: var(--surface-subtle);
+      padding: 6px 14px;
+      border-radius: 30px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .role-badge {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background-color: var(--primary-light);
+      color: var(--primary);
+      text-transform: uppercase;
+    }
+
+    .btn {
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      border: none;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      box-shadow: 0 2px 8px rgba(184, 93, 56, 0.25);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--surface-subtle);
+      border-color: var(--text-muted);
+    }
+
+    .btn-danger {
+      background-color: var(--danger-light);
+      color: var(--danger);
+      border: 1px solid rgba(198, 61, 47, 0.2);
+    }
+
+    .btn-danger:hover {
+      background-color: var(--danger);
+      color: white;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    /* Main Container */
+    main.dashboard-container {
+      max-width: 1280px;
+      margin: 28px auto;
+      padding: 0 24px;
+    }
+
+    /* KPI Metrics Row */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .metric-card {
+      background-color: var(--surface);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: transform 0.2s;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .metric-info h3 {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+    }
+
+    .metric-info .value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .metric-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .icon-products { background-color: var(--primary-light); color: var(--primary); }
+    .icon-orders { background-color: var(--secondary-light); color: var(--secondary); }
+    .icon-revenue { background-color: #FEF6E8; color: var(--gold); }
+    .icon-categories { background-color: #F2ECE4; color: var(--text); }
+
+    /* Navigation Tabs */
+    .tabs-nav {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border-light);
+      padding-bottom: 8px;
+    }
+
+    .tab-button {
+      background: none;
+      border: none;
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      padding: 8px 16px;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s;
+    }
+
+    .tab-button.active {
+      color: var(--primary);
+    }
+
+    .tab-button.active::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background-color: var(--primary);
+      border-radius: 3px 3px 0 0;
+    }
+
+    /* Content Card */
+    .content-card {
+      background-color: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+
+    .card-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .search-input {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      min-width: 220px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+    }
+
+    /* Responsive Tables */
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13.5px;
+    }
+
+    table.data-table th {
+      background-color: var(--surface-subtle);
+      padding: 12px 20px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    table.data-table td {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+    }
+
+    table.data-table tr:hover {
+      background-color: rgba(251, 249, 245, 0.7);
+    }
+
+    .product-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .product-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      object-fit: cover;
+      background-color: var(--surface-subtle);
+      border: 1px solid var(--border);
+    }
+
+    .product-meta .name {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .product-meta .seller {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .price-tag {
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge-active { background-color: var(--success-light); color: var(--success); }
+    .badge-stock-out { background-color: var(--danger-light); color: var(--danger); }
+    .badge-pending { background-color: #FEF6E8; color: var(--gold); }
+    .badge-shipped { background-color: var(--secondary-light); color: var(--secondary); }
+    .badge-delivered { background-color: var(--success-light); color: var(--success); }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(34, 28, 24, 0.5);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background-color: var(--surface);
+      border-radius: var(--radius-lg);
+      max-width: 560px;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      animation: modalSlide 0.25s ease-out;
+    }
+
+    @keyframes modalSlide {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h3 {
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    /* Upload Dropzone */
+    .upload-dropzone {
+      border: 2px dashed var(--border);
+      background-color: var(--surface-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .upload-dropzone:hover, .upload-dropzone.dragover {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    .preset-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .preset-pill:hover {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background-color: var(--text);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      display: none;
+      align-items: center;
+      gap: 10px;
+      z-index: 2000;
+    }
+
+    #toast.show {
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header Navbar -->
+  <header class="navbar">
+    <div class="brand-container">
+      <div class="brand-crest">🏺</div>
+      <div class="brand-titles">
+        <div class="est">EST. 2026 • PORTAL CONTROL</div>
+        <div class="name">ARTISAN <span>MARKETPLACE</span></div>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <div id="userInfo" class="user-pill">
+        <span id="userName">Checking session...</span>
+        <span id="userRole" class="role-badge">ADMIN</span>
+      </div>
+
+      <button id="authBtn" class="btn btn-outline btn-sm" onclick="openLoginModal()">
+        Sign In / Switch
+      </button>
+
+      <button class="btn btn-primary btn-sm" onclick="openAddProductModal()">
+        + Add New Craft
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="dashboard-container">
+    <!-- KPI Row -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-info">
+          <h3>Active Creations</h3>
+          <div class="value" id="kpiProducts">--</div>
+        </div>
+        <div class="metric-icon icon-products">🎨</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-info">
+          <h3>Customer Orders</h3>
+          <div class="value" id="kpiOrders">--</div>
+        </div>
+        <div class="metric-icon icon-orders">📦</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-info">
+          <h3>Total Revenue</h3>
+          <div class="value" id="kpiRevenue">--</div>
+        </div>
+        <div class="metric-icon icon-revenue">🪙</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-info">
+          <h3>Craft Guilds</h3>
+          <div class="value" id="kpiCategories">--</div>
+        </div>
+        <div class="metric-icon icon-categories">🏺</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs-nav">
+      <button class="tab-button active" onclick="switchTab('products')">Creations & Pricing</button>
+      <button class="tab-button" onclick="switchTab('orders')">Orders & Fulfillment</button>
+      <button class="tab-button" onclick="switchTab('categories')">Craft Categories</button>
+    </div>
+
+    <!-- TAB 1: PRODUCTS & PRICING -->
+    <div id="tab-products" class="tab-content">
+      <div class="content-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>Marketplace Catalog & Price Control</span>
+            <span id="productCountBadge" class="badge badge-active">0 items</span>
+          </div>
+
+          <div class="card-actions">
+            <input type="text" id="productSearch" class="search-input" placeholder="Search crafts or artisans..." oninput="handleProductSearch()">
+            <button class="btn btn-outline btn-sm" onclick="loadProducts()">↻ Refresh</button>
+            <button class="btn btn-primary btn-sm" onclick="openAddProductModal()">+ Add Creation</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Creation</th>
+                <th>Category</th>
+                <th>Artisan Shop</th>
+                <th>Price ($)</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productsTableBody">
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                  Loading artisan creations...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: ORDERS & FULFILLMENT -->
+    <div id="tab-orders" class="tab-content" style="display: none;">
+      <div class="content-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>Customer Orders & Shipping Management</span>
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-outline btn-sm" onclick="loadOrders()">↻ Refresh Orders</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Items Ordered</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Update Fulfillment</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                  Loading orders...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: CATEGORIES -->
+    <div id="tab-categories" class="tab-content" style="display: none;">
+      <div class="content-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>Craft Disciplines & Guilds</span>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Discipline Name</th>
+                <th>Slug</th>
+                <th>Description</th>
+                <th>Live Creations</th>
+              </tr>
+            </thead>
+            <tbody id="categoriesTableBody">
+              <tr>
+                <td colspan="4" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                  Loading categories...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL: ADD / EDIT PRODUCT -->
+  <div id="productModal" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalTitle">Publish New Artisan Creation</h3>
+        <button class="modal-close" onclick="closeProductModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="productForm" onsubmit="handleProductSubmit(event)">
+          <input type="hidden" id="editProductId">
+
+          <div class="form-group">
+            <label class="form-label">Creation Name *</label>
+            <input type="text" id="formName" class="form-control" placeholder="e.g. Hand-Thrown Terracotta Pitcher" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Category *</label>
+              <select id="formCategory" class="form-control" required>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Price ($ USD) *</label>
+              <input type="number" id="formPrice" step="0.01" class="form-control" placeholder="45.00" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Available Stock Quantity *</label>
+              <input type="number" id="formStock" class="form-control" placeholder="10" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <select id="formStatus" class="form-control">
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="DRAFT">DRAFT</option>
+                <option value="OUT_OF_STOCK">OUT_OF_STOCK</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Interactive Image Upload Dropzone -->
+          <div class="form-group">
+            <label class="form-label">Craft Photo *</label>
+            
+            <div class="upload-dropzone" id="uploadDropzone" onclick="document.getElementById('formImageFile').click()">
+              <div id="uploadPrompt">
+                <div style="font-size: 30px; margin-bottom: 6px;">📷</div>
+                <div style="font-weight: 700; font-size: 13.5px; color: var(--text);">Click to Browse or Drag & Drop Image</div>
+                <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 3px;">PNG, JPG, JPEG, WebP (Uploaded directly to server)</div>
+              </div>
+
+              <div id="uploadPreviewContainer" style="display: none; align-items: center; gap: 14px; text-align: left;">
+                <img id="uploadPreviewImg" src="" alt="Preview" style="width: 72px; height: 72px; border-radius: 10px; object-fit: cover; border: 1.5px solid var(--border);">
+                <div>
+                  <div id="uploadFileName" style="font-weight: 700; font-size: 13px; color: var(--text); word-break: break-all;">photo.jpg</div>
+                  <div id="uploadStatusBadge" class="badge badge-active" style="margin-top: 4px;">Ready</div>
+                  <div style="margin-top: 6px;">
+                    <button type="button" class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px;" onclick="event.stopPropagation(); resetImageUpload()">Change Image</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <input type="file" id="formImageFile" accept="image/*" style="display: none;" onchange="handleFileSelected(event)">
+            <input type="hidden" id="formImageUrl" required>
+
+            <!-- Sample Craft Presets -->
+            <div style="margin-top: 10px;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-secondary); margin-bottom: 6px;">Or select a ready craft preset:</div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button type="button" class="preset-pill" onclick="setPresetImage('pottery')">🏺 Pottery Vase</button>
+                <button type="button" class="preset-pill" onclick="setPresetImage('leather')">👜 Leather Bag</button>
+                <button type="button" class="preset-pill" onclick="setPresetImage('jewelry')">💍 Silver Ring</button>
+                <button type="button" class="preset-pill" onclick="setPresetImage('textile')">🧣 Woven Scarf</button>
+                <button type="button" class="preset-pill" onclick="toggleManualUrl()">🔗 Enter URL</button>
+              </div>
+            </div>
+
+            <div id="manualUrlGroup" style="display: none; margin-top: 8px;">
+              <input type="url" id="manualUrlInput" class="form-control" placeholder="https://images.unsplash.com/..." oninput="handleManualUrlInput(this.value)">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description & Craft Story *</label>
+            <textarea id="formDescription" class="form-control" rows="3" placeholder="Describe the materials, craftsmanship, and story behind this piece..." required></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button type="button" class="btn btn-outline" onclick="closeProductModal()">Cancel</button>
+            <button type="submit" id="saveProductBtn" class="btn btn-primary">Publish to Marketplace</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: LOGIN / SWITCH ROLE -->
+  <div id="loginModal" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Admin / Artisan Authentication</h3>
+        <button class="modal-close" onclick="closeLoginModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+          Choose a pre-configured account or enter your credentials to authenticate:
+        </p>
+
+        <!-- Quick 1-Click Login Shortcuts -->
+        <div style="display: flex; gap: 10px; margin-bottom: 18px;">
+          <button type="button" class="btn btn-outline btn-sm" style="flex: 1;" onclick="quickLogin('admin@artisan.com', 'Password123!')">
+            ⚡ Quick Admin Login
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" style="flex: 1;" onclick="quickLogin('elena@artisan.com', 'Password123!')">
+            ⚡ Quick Seller Login
+          </button>
+        </div>
+
+        <form onsubmit="handleLoginSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="loginEmail" class="form-control" value="admin@artisan.com" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="loginPassword" class="form-control" value="Password123!" required>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button type="button" class="btn btn-outline" onclick="closeLoginModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Sign In</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast">
+    <span id="toastMessage">Success</span>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin + '/api';
+    let token = localStorage.getItem('artisan_admin_token') || '';
+    let currentUser = null;
+    let cachedProducts = [];
+    let cachedCategories = [];
+    let cachedOrders = [];
+
+    const PRESETS = {
+      pottery: 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=800&q=80',
+      leather: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80',
+      jewelry: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80',
+      textile: 'https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?auto=format&fit=crop&w=800&q=80'
+    };
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+      toastMessage.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    async function apiRequest(endpoint, method = 'GET', body = null) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const options = { method, headers };
+      if (body) options.body = JSON.stringify(body);
+
+      const res = await fetch(API_BASE + endpoint, options);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'API request failed');
+      }
+      return data;
+    }
+
+    // Initialize session
+    async function initSession() {
+      setupDropzone();
+
+      if (!token) {
+        await quickLogin('admin@artisan.com', 'Password123!');
+        return;
+      }
+
+      try {
+        const profile = await apiRequest('/auth/profile');
+        currentUser = profile.data;
+        updateUserUI();
+        loadAllData();
+      } catch (err) {
+        console.warn('Session expired, auto-logging in as admin...');
+        await quickLogin('admin@artisan.com', 'Password123!');
+      }
+    }
+
+    async function quickLogin(email, password) {
+      try {
+        const res = await apiRequest('/auth/login', 'POST', { email, password });
+        token = res.data.token;
+        currentUser = res.data.user;
+        localStorage.setItem('artisan_admin_token', token);
+        updateUserUI();
+        closeLoginModal();
+        showToast(`Signed in as ${currentUser.name} (${currentUser.role})`);
+        loadAllData();
+      } catch (err) {
+        showToast('Login failed: ' + err.message);
+      }
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      await quickLogin(email, password);
+    }
+
+    function updateUserUI() {
+      if (currentUser) {
+        document.getElementById('userName').textContent = currentUser.name;
+        document.getElementById('userRole').textContent = currentUser.role;
+        document.getElementById('authBtn').textContent = 'Sign Out';
+        document.getElementById('authBtn').onclick = logout;
+      } else {
+        document.getElementById('userName').textContent = 'Not authenticated';
+        document.getElementById('userRole').textContent = 'GUEST';
+        document.getElementById('authBtn').textContent = 'Sign In';
+        document.getElementById('authBtn').onclick = openLoginModal;
+      }
+    }
+
+    function logout() {
+      token = '';
+      currentUser = null;
+      localStorage.removeItem('artisan_admin_token');
+      updateUserUI();
+      showToast('Signed out');
+    }
+
+    // Load data
+    async function loadAllData() {
+      await Promise.all([loadCategories(), loadProducts(), loadOrders()]);
+    }
+
+    async function loadCategories() {
+      try {
+        const res = await apiRequest('/categories');
+        cachedCategories = res.data || [];
+        document.getElementById('kpiCategories').textContent = cachedCategories.length;
+
+        // Render table
+        const tbody = document.getElementById('categoriesTableBody');
+        tbody.innerHTML = cachedCategories.map(cat => `
+          <tr>
+            <td><strong>${cat.name}</strong></td>
+            <td><code>${cat.slug}</code></td>
+            <td style="color: var(--text-secondary);">${cat.description || '—'}</td>
+            <td><span class="badge badge-active">${cat.productCount || 0} creations</span></td>
+          </tr>
+        `).join('');
+
+        // Populate dropdown in modal
+        const catSelect = document.getElementById('formCategory');
+        catSelect.innerHTML = cachedCategories.map(cat => `
+          <option value="${cat.id}">${cat.name}</option>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadProducts() {
+      try {
+        const res = await apiRequest('/products?limit=100');
+        cachedProducts = res.data || [];
+        document.getElementById('kpiProducts').textContent = cachedProducts.length;
+        document.getElementById('productCountBadge').textContent = `${cachedProducts.length} items`;
+        renderProductsTable(cachedProducts);
+      } catch (err) {
+        showToast('Failed to load products: ' + err.message);
+      }
+    }
+
+    function renderProductsTable(products) {
+      const tbody = document.getElementById('productsTableBody');
+      if (products.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 30px; color: var(--text-muted);">No creations found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = products.map(p => {
+        const img = (p.images && p.images[0] && p.images[0].imageUrl) || 'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=150&q=80';
+        const sellerName = (p.seller && p.seller.shopName) || 'Artisan Workshop';
+        const categoryName = (p.category && p.category.name) || 'Craft';
+
+        return `
+          <tr>
+            <td>
+              <div class="product-cell">
+                <img src="${img}" alt="${p.name}" class="product-thumb">
+                <div class="product-meta">
+                  <div class="name">${p.name}</div>
+                  <div class="seller">${sellerName}</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge" style="background: var(--surface-subtle);">${categoryName}</span></td>
+            <td>${sellerName}</td>
+            <td><span class="price-tag">$${Number(p.price).toFixed(2)}</span></td>
+            <td><strong>${p.stock}</strong> in stock</td>
+            <td>
+              <span class="badge ${p.stock > 0 ? 'badge-active' : 'badge-stock-out'}">
+                ${p.status || (p.stock > 0 ? 'ACTIVE' : 'OUT_OF_STOCK')}
+              </span>
+            </td>
+            <td>
+              <div style="display: flex; gap: 6px;">
+                <button class="btn btn-outline btn-sm" onclick="editProductPrice('${p.id}', ${p.price}, ${p.stock})">
+                  ✏️ Edit Price/Stock
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function handleProductSearch() {
+      const q = document.getElementById('productSearch').value.toLowerCase().trim();
+      const filtered = cachedProducts.filter(p => 
+        p.name.toLowerCase().includes(q) || 
+        (p.seller && p.seller.shopName && p.seller.shopName.toLowerCase().includes(q))
+      );
+      renderProductsTable(filtered);
+    }
+
+    // Live Edit Price and Stock
+    async function editProductPrice(id, currentPrice, currentStock) {
+      const newPriceStr = prompt(`Update Price ($ USD) for this creation:`, currentPrice);
+      if (newPriceStr === null) return;
+      const newPrice = parseFloat(newPriceStr);
+      if (isNaN(newPrice) || newPrice < 0) {
+        alert('Please enter a valid positive price.');
+        return;
+      }
+
+      const newStockStr = prompt(`Update Stock Quantity:`, currentStock);
+      if (newStockStr === null) return;
+      const newStock = parseInt(newStockStr, 10);
+      if (isNaN(newStock) || newStock < 0) {
+        alert('Please enter a valid stock integer.');
+        return;
+      }
+
+      try {
+        await apiRequest(`/products/${id}`, 'PUT', {
+          price: newPrice,
+          stock: newStock,
+          status: newStock > 0 ? 'ACTIVE' : 'OUT_OF_STOCK'
+        });
+        showToast(`Updated creation: $${newPrice.toFixed(2)} (Stock: ${newStock})`);
+        loadProducts();
+      } catch (err) {
+        showToast('Error updating price: ' + err.message);
+      }
+    }
+
+    async function deleteProduct(id) {
+      if (!confirm('Are you sure you want to delete this product?')) return;
+      try {
+        await apiRequest(`/products/${id}`, 'DELETE');
+        showToast('Product removed from catalog.');
+        loadProducts();
+      } catch (err) {
+        showToast('Failed to delete: ' + err.message);
+      }
+    }
+
+    // Image Upload & Presets Logic
+    function setupDropzone() {
+      const dropzone = document.getElementById('uploadDropzone');
+      if (!dropzone) return;
+
+      dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+      });
+
+      dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('dragover');
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          uploadSelectedFile(e.dataTransfer.files[0]);
+        }
+      });
+    }
+
+    function handleFileSelected(event) {
+      if (event.target.files && event.target.files[0]) {
+        uploadSelectedFile(event.target.files[0]);
+      }
+    }
+
+    async function uploadSelectedFile(file) {
+      // Local preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById('uploadPrompt').style.display = 'none';
+        document.getElementById('uploadPreviewContainer').style.display = 'flex';
+        document.getElementById('uploadPreviewImg').src = e.target.result;
+        document.getElementById('uploadFileName').textContent = file.name;
+        document.getElementById('uploadStatusBadge').textContent = 'Uploading...';
+        document.getElementById('uploadStatusBadge').className = 'badge badge-pending';
+      };
+      reader.readAsDataURL(file);
+
+      // Perform upload to /api/upload/single
+      try {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const headers = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const res = await fetch(API_BASE + '/upload/single', {
+          method: 'POST',
+          headers,
+          body: formData,
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.message || 'Upload failed');
+
+        const uploadedUrl = json.data.imageUrl;
+        document.getElementById('formImageUrl').value = uploadedUrl;
+        document.getElementById('uploadStatusBadge').textContent = 'Uploaded to Server ✓';
+        document.getElementById('uploadStatusBadge').className = 'badge badge-active';
+        showToast('Craft image uploaded successfully!');
+      } catch (err) {
+        showToast('Upload error: ' + err.message);
+        document.getElementById('uploadStatusBadge').textContent = 'Upload Failed';
+        document.getElementById('uploadStatusBadge').className = 'badge badge-stock-out';
+      }
+    }
+
+    function setPresetImage(key) {
+      const url = PRESETS[key];
+      if (!url) return;
+      document.getElementById('formImageUrl').value = url;
+      document.getElementById('uploadPrompt').style.display = 'none';
+      document.getElementById('uploadPreviewContainer').style.display = 'flex';
+      document.getElementById('uploadPreviewImg').src = url;
+      document.getElementById('uploadFileName').textContent = `Preset: ${key.charAt(0).toUpperCase() + key.slice(1)}`;
+      document.getElementById('uploadStatusBadge').textContent = 'Preset Selected ✓';
+      document.getElementById('uploadStatusBadge').className = 'badge badge-active';
+      showToast(`Selected ${key} preset photo`);
+    }
+
+    function resetImageUpload() {
+      document.getElementById('formImageFile').value = '';
+      document.getElementById('formImageUrl').value = '';
+      document.getElementById('uploadPrompt').style.display = 'block';
+      document.getElementById('uploadPreviewContainer').style.display = 'none';
+    }
+
+    function toggleManualUrl() {
+      const box = document.getElementById('manualUrlGroup');
+      box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function handleManualUrlInput(url) {
+      if (!url) return;
+      document.getElementById('formImageUrl').value = url;
+      document.getElementById('uploadPrompt').style.display = 'none';
+      document.getElementById('uploadPreviewContainer').style.display = 'flex';
+      document.getElementById('uploadPreviewImg').src = url;
+      document.getElementById('uploadFileName').textContent = 'Custom Web URL';
+      document.getElementById('uploadStatusBadge').textContent = 'Custom URL ✓';
+      document.getElementById('uploadStatusBadge').className = 'badge badge-active';
+    }
+
+    // Orders
+    async function loadOrders() {
+      try {
+        const res = await apiRequest('/orders/seller');
+        cachedOrders = res.data || [];
+        document.getElementById('kpiOrders').textContent = cachedOrders.length;
+
+        // Calculate revenue
+        const totalRevenue = cachedOrders.reduce((sum, item) => sum + (Number(item.subtotal) || Number(item.totalAmount) || 0), 0);
+        document.getElementById('kpiRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+
+        const tbody = document.getElementById('ordersTableBody');
+        if (cachedOrders.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 30px; color: var(--text-muted);">No orders recorded yet.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = cachedOrders.map(item => {
+          const orderNum = item.orderNumber || (item.order && item.order.orderNumber) || 'ORD-2026';
+          const orderId = item.orderId || (item.order && item.order.id);
+          const status = item.orderStatus || (item.order && item.order.status) || 'PENDING';
+          const customer = (item.order && item.order.user && item.order.user.name) || 'Patron';
+          const productName = (item.product && item.product.name) || 'Handmade Creation';
+          const subtotal = item.subtotal || item.totalAmount || 0;
+
+          return `
+            <tr>
+              <td><strong>${orderNum}</strong></td>
+              <td style="color: var(--text-muted); font-size: 12px;">Recently</td>
+              <td>${customer}</td>
+              <td>${productName} (x${item.quantity || 1})</td>
+              <td><strong style="color: var(--primary);">$${Number(subtotal).toFixed(2)}</strong></td>
+              <td>
+                <span class="badge badge-${status.toLowerCase()}">${status}</span>
+              </td>
+              <td>
+                <select class="form-control" style="width: auto; padding: 4px 8px; font-size: 12px;" onchange="updateOrderStatus('${orderId}', this.value)">
+                  <option value="PENDING" ${status === 'PENDING' ? 'selected' : ''}>PENDING</option>
+                  <option value="PROCESSING" ${status === 'PROCESSING' ? 'selected' : ''}>PROCESSING</option>
+                  <option value="SHIPPED" ${status === 'SHIPPED' ? 'selected' : ''}>SHIPPED</option>
+                  <option value="DELIVERED" ${status === 'DELIVERED' ? 'selected' : ''}>DELIVERED</option>
+                  <option value="CANCELLED" ${status === 'CANCELLED' ? 'selected' : ''}>CANCELLED</option>
+                </select>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.warn('Orders fetch error:', err.message);
+      }
+    }
+
+    async function updateOrderStatus(orderId, newStatus) {
+      if (!orderId) return;
+      try {
+        await apiRequest(`/orders/${orderId}/status`, 'PATCH', { status: newStatus });
+        showToast(`Order updated to ${newStatus}`);
+        loadOrders();
+      } catch (err) {
+        showToast('Failed to update status: ' + err.message);
+      }
+    }
+
+    // Modal helpers
+    function openAddProductModal() {
+      document.getElementById('editProductId').value = '';
+      document.getElementById('modalTitle').textContent = 'Publish New Artisan Creation';
+      document.getElementById('formName').value = '';
+      document.getElementById('formPrice').value = '';
+      document.getElementById('formStock').value = '10';
+      document.getElementById('formDescription').value = '';
+      setPresetImage('pottery'); // Default to high-res pottery craft photo
+      document.getElementById('productModal').classList.add('open');
+    }
+
+    function closeProductModal() {
+      document.getElementById('productModal').classList.remove('open');
+    }
+
+    async function handleProductSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('formName').value.trim();
+      const categoryId = document.getElementById('formCategory').value;
+      const price = parseFloat(document.getElementById('formPrice').value);
+      const stock = parseInt(document.getElementById('formStock').value, 10);
+      const description = document.getElementById('formDescription').value.trim();
+      const imageUrl = document.getElementById('formImageUrl').value.trim();
+
+      if (!imageUrl) {
+        alert('Please upload an image or choose a preset.');
+        return;
+      }
+
+      try {
+        await apiRequest('/products', 'POST', {
+          name,
+          categoryId,
+          price,
+          stock,
+          description,
+          images: [{ imageUrl, isPrimary: true }]
+        });
+        showToast(`Craft published: ${name}!`);
+        closeProductModal();
+        loadProducts();
+      } catch (err) {
+        showToast('Error creating product: ' + err.message);
+      }
+    }
+
+    function openLoginModal() {
+      document.getElementById('loginModal').classList.add('open');
+    }
+
+    function closeLoginModal() {
+      document.getElementById('loginModal').classList.remove('open');
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+
+      if (tab === 'products') {
+        event.target.classList.add('active');
+        document.getElementById('tab-products').style.display = 'block';
+      } else if (tab === 'orders') {
+        event.target.classList.add('active');
+        document.getElementById('tab-orders').style.display = 'block';
+        loadOrders();
+      } else if (tab === 'categories') {
+        event.target.classList.add('active');
+        document.getElementById('tab-categories').style.display = 'block';
+        loadCategories();
+      }
+    }
+
+    // Boot
+    window.addEventListener('DOMContentLoaded', initSession);
+  </script>
+</body>
+</html>
