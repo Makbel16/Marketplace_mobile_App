@@ -101,6 +101,16 @@ export class OrderService {
       });
     }
 
+  private static normalizePhone(phone: string): string {
+    const cleaned = phone.replace(/[\s\-\(\)\.]/g, '');
+    const match = cleaned.match(/^(?:\+251|00251|251|0)?([97]\d{8})$/);
+    if (match) {
+      const num = match[1];
+      return `+251 ${num.slice(0, 2)} ${num.slice(2, 5)} ${num.slice(5)}`;
+    }
+    return phone.trim();
+  }
+
     // Execute atomic transaction
     const order = await prisma.$transaction(async (tx) => {
       const orderNumber = this.generateOrderNumber();
@@ -112,7 +122,7 @@ export class OrderService {
           totalAmount: calculatedTotal,
           status: OrderStatus.PENDING,
           shippingAddress: dto.shippingAddress,
-          phone: dto.phone,
+          phone: OrderService.normalizePhone(dto.phone),
           notes: dto.notes,
         },
       });

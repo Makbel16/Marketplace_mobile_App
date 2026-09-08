@@ -18,6 +18,7 @@ import { PrimaryButton, RatingStars } from '../../components/ui';
 import { LoadingState, ErrorState } from '../../components/feedback';
 import { Product } from '../../types';
 import { ApiClient } from '../../services/apiClient';
+import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useFavorites } from '../../context/FavoritesContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -27,10 +28,10 @@ const { width } = Dimensions.get('window');
 export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { token } = useAuth();
   const { addToCart } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { t, formatPrice, isAmharic } = useLanguage();
-
 
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -60,23 +61,45 @@ export default function ProductDetailsScreen() {
 
   const handleAddToCart = async () => {
     if (!product) return;
+
+    // Authentication Guard: require login before adding to cart
+    if (!token) {
+      Alert.alert(
+        isAmharic ? 'መግባት ያስፈልጋል' : 'Sign In Required',
+        isAmharic
+          ? 'ምርቶችን ወደ ጋሪዎ ለማከል እና ትዕዛዝ ለማስገባት እባክዎ መጀመሪያ ወደ መለያዎ ይግቡ።'
+          : 'Please sign in or create an account to add items to your cart and place an order.',
+        [
+          { text: isAmharic ? 'ይቅር' : 'Cancel', style: 'cancel' },
+          {
+            text: isAmharic ? 'ግባ' : 'Sign In',
+            onPress: () => router.push('/(auth)/login' as any),
+          },
+        ]
+      );
+      return;
+    }
+
     setIsAdding(true);
     try {
       await addToCart(product, quantity);
       Alert.alert(
-        'Added to Cart',
-        `${quantity} x "${product.name}" added to your shopping cart.`,
+        isAmharic ? 'ወደ ጋሪ ተጨምሯል' : 'Added to Cart',
+        isAmharic
+          ? `${quantity} x "${product.name}" ወደ ግዢ ጋሪዎ ተጨምሯል።`
+          : `${quantity} x "${product.name}" added to your shopping cart.`,
         [
-          { text: 'Keep Shopping', style: 'cancel' },
-          { text: 'View Cart', onPress: () => router.push('/(tabs)/cart' as any) },
+          { text: isAmharic ? 'ግዢ ቀጥል' : 'Keep Shopping', style: 'cancel' },
+          { text: isAmharic ? 'ጋሪ ይመልከቱ' : 'View Cart', onPress: () => router.push('/(tabs)/cart' as any) },
         ]
       );
     } catch (err: any) {
-      Alert.alert('Cart Error', err.message || 'Could not add product to cart');
+      Alert.alert(isAmharic ? 'የጋሪ ስህተት' : 'Cart Error', err.message || 'Could not add product to cart');
     } finally {
       setIsAdding(false);
     }
   };
+
 
   if (isLoading) {
     return (

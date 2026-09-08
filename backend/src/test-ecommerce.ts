@@ -47,9 +47,9 @@ async function runEcommerceTests() {
     // 5. Checkout & Order Creation (Atomic Transaction)
     console.log('\n[Step 4] Placing order (Cash on Delivery)...');
     const order = await OrderService.createOrder(customer.id, {
-      shippingAddress: '123 Artisan Lane, Creative District, Seattle, WA 98101',
-      phone: '+15559876543',
-      notes: 'Please leave at the front door.',
+      shippingAddress: 'Bole Sub-city, Woreda 03, Addis Ababa, Ethiopia',
+      phone: '+251911234567',
+      notes: 'Please call before arrival.',
     });
 
     if (!order.orderNumber.startsWith('ART-')) throw new Error('Invalid order number format');

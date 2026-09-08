@@ -19,6 +19,8 @@ import { useCart } from '../../context/CartContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { ApiClient } from '../../services/apiClient';
 import { Order } from '../../types';
+import { isValidEthiopianPhone, normalizeEthiopianPhone } from '../../utils/phone';
+
 
 export default function CheckoutScreen() {
   const router = useRouter();
@@ -35,30 +37,50 @@ export default function CheckoutScreen() {
 
   const handlePlaceOrder = async () => {
     if (!token) {
-      Alert.alert('Sign In Required', 'Please sign in or create an account to place your order.', [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Sign In', onPress: () => router.push('/(auth)/login' as any) },
-      ]);
+      Alert.alert(
+        isAmharic ? 'መግባት ያስፈልጋል' : 'Sign In Required',
+        isAmharic
+          ? 'ትዕዛዝዎን ለማስገባት እባክዎ ይግቡ ወይም መለያ ይፍጠሩ።'
+          : 'Please sign in or create an account to place your order.',
+        [
+          { text: isAmharic ? 'ይቅር' : 'Cancel', style: 'cancel' },
+          { text: isAmharic ? 'ግባ' : 'Sign In', onPress: () => router.push('/(auth)/login' as any) },
+        ]
+      );
       return;
     }
+
 
     if (!shippingAddress.trim() || shippingAddress.trim().length < 10) {
-      Alert.alert('Invalid Address', 'Please provide a complete shipping address (at least 10 characters).');
+      Alert.alert(
+        isAmharic ? 'አድራሻ ያስገቡ' : 'Invalid Address',
+        isAmharic
+          ? 'እባክዎ ትክክለኛ የማድረሻ አድራሻ ያስገቡ (ቢያንስ 10 ፊደላት)።'
+          : 'Please provide a complete shipping address (at least 10 characters).'
+      );
       return;
     }
 
-    if (!phone.trim() || phone.trim().length < 7) {
-      Alert.alert('Invalid Phone', 'Please provide a valid contact phone number.');
+    if (!isValidEthiopianPhone(phone)) {
+      Alert.alert(
+        isAmharic ? 'ትክክለኛ የኢትዮጵያ ስልክ ቁጥር ያስገቡ' : 'Ethiopian Phone Required',
+        isAmharic
+          ? 'እባክዎ ትክክለኛ የኢትዮጵያ ስልክ ቁጥር ያስገቡ (ለምሳሌ 0911 234 567 ወይም 0712 345 678) አድራሹ ወይም ባለሙያው እንዲደውልልዎ።'
+          : 'Please enter a valid Ethiopian phone number (e.g. 0911 234 567 or +251 9... / 07...) so the artisan or courier can call you for delivery.'
+      );
       return;
     }
+
+    const formattedPhone = normalizeEthiopianPhone(phone);
 
     setIsSubmitting(true);
     try {
       const res = await ApiClient.post<{ success: boolean; data: Order }>('/orders', {
         shippingAddress: shippingAddress.trim(),
-        phone: phone.trim(),
+        phone: formattedPhone,
         notes: notes.trim() || undefined,
       });
+
 
       if (res.data) {
         await clearCart();
@@ -115,13 +137,14 @@ export default function CheckoutScreen() {
           />
 
           <InputField
-            label="Phone Number"
+            label={isAmharic ? 'የኢትዮጵያ ስልክ ቁጥር (ለመደወያ) *' : 'Ethiopian Phone Number (For Calls) *'}
             value={phone}
             onChangeText={setPhone}
-            placeholder="+1 (555) 000-0000"
+            placeholder="0911 234 567 / 0712 345 678"
             keyboardType="phone-pad"
             icon="call-outline"
           />
+
 
           <InputField
             label="Complete Shipping Address"

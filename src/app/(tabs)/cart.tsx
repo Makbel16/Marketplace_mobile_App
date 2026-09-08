@@ -14,15 +14,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { ArtisanColors } from '../../constants/colors';
 import { PrimaryButton } from '../../components/ui/PrimaryButton';
 import { EmptyState } from '../../components/feedback/EmptyState';
+import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { CartItem } from '../../types';
 
 export default function CartScreen() {
   const router = useRouter();
+  const { token } = useAuth();
   const { cart, total, totalItems, updateQuantity, removeFromCart, clearCart, isLoading } =
     useCart();
-  const { t, formatPrice } = useLanguage();
+  const { t, formatPrice, isAmharic } = useLanguage();
+
 
   const renderCartItem = ({ item }: { item: CartItem }) => {
     const imageUrl =
@@ -129,7 +132,19 @@ export default function CartScreen() {
         </View>
       )}
 
-      {items.length === 0 ? (
+      {!token ? (
+        <EmptyState
+          icon="lock-closed-outline"
+          title={isAmharic ? 'መግባት ያስፈልጋል' : 'Sign In to Access Cart'}
+          message={
+            isAmharic
+              ? 'ምርቶችን ወደ ጋሪዎ ለማከል እና ትዕዛዝ ለማጠናቀቅ እባክዎ መጀመሪያ ወደ መለያዎ ይግቡ ወይም ይመዝገቡ።'
+              : 'Please sign in or create an account to view your cart, add artisan creations, and complete checkout.'
+          }
+          actionTitle={isAmharic ? 'ግባ / ተመዝገብ' : 'Sign In / Register'}
+          onAction={() => router.push('/(auth)/login' as any)}
+        />
+      ) : items.length === 0 ? (
         <EmptyState
           icon="bag-handle-outline"
           title={t('emptyCartTitle')}
@@ -138,6 +153,7 @@ export default function CartScreen() {
           onAction={() => router.push('/(tabs)' as any)}
         />
       ) : (
+
         <View style={styles.content}>
           <FlatList
             data={items}

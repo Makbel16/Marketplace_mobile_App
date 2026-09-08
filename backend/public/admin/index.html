@@ -766,8 +766,8 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label">Price ($ USD) *</label>
-              <input type="number" id="formPrice" step="0.01" class="form-control" placeholder="45.00" required>
+              <label class="form-label">Price (ETB / ብር) *</label>
+              <input type="number" id="formPrice" step="1" class="form-control" placeholder="1500" required>
             </div>
           </div>
 
@@ -1062,7 +1062,7 @@
             </td>
             <td><span class="badge" style="background: var(--surface-subtle);">${categoryName}</span></td>
             <td>${sellerName}</td>
-            <td><span class="price-tag">$${Number(p.price).toFixed(2)}</span></td>
+            <td><span class="price-tag">${Math.round(p.price).toLocaleString()} ETB</span></td>
             <td><strong>${p.stock}</strong> in stock</td>
             <td>
               <span class="badge ${p.stock > 0 ? 'badge-active' : 'badge-stock-out'}">
@@ -1095,7 +1095,7 @@
 
     // Live Edit Price and Stock
     async function editProductPrice(id, currentPrice, currentStock) {
-      const newPriceStr = prompt(`Update Price ($ USD) for this creation:`, currentPrice);
+      const newPriceStr = prompt(`Update Price (ETB / ብር) for this creation:`, currentPrice);
       if (newPriceStr === null) return;
       const newPrice = parseFloat(newPriceStr);
       if (isNaN(newPrice) || newPrice < 0) {
@@ -1117,7 +1117,7 @@
           stock: newStock,
           status: newStock > 0 ? 'ACTIVE' : 'OUT_OF_STOCK'
         });
-        showToast(`Updated creation: $${newPrice.toFixed(2)} (Stock: ${newStock})`);
+        showToast(`Updated creation: ${Math.round(newPrice).toLocaleString()} ETB (Stock: ${newStock})`);
         loadProducts();
       } catch (err) {
         showToast('Error updating price: ' + err.message);
@@ -1250,7 +1250,7 @@
 
         // Calculate revenue
         const totalRevenue = cachedOrders.reduce((sum, item) => sum + (Number(item.subtotal) || Number(item.totalAmount) || 0), 0);
-        document.getElementById('kpiRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+        document.getElementById('kpiRevenue').textContent = `${Math.round(totalRevenue).toLocaleString()} ETB`;
 
         const tbody = document.getElementById('ordersTableBody');
         if (cachedOrders.length === 0) {
@@ -1272,7 +1272,7 @@
               <td style="color: var(--text-muted); font-size: 12px;">Recently</td>
               <td>${customer}</td>
               <td>${productName} (x${item.quantity || 1})</td>
-              <td><strong style="color: var(--primary);">$${Number(subtotal).toFixed(2)}</strong></td>
+              <td><strong style="color: var(--primary);">${Math.round(subtotal).toLocaleString()} ETB</strong></td>
               <td>
                 <span class="badge badge-${status.toLowerCase()}">${status}</span>
               </td>

@@ -12,8 +12,15 @@ export const createOrderValidator = [
     .trim()
     .notEmpty()
     .withMessage('Contact phone number is required')
-    .isLength({ min: 7, max: 20 })
-    .withMessage('Phone number must be between 7 and 20 characters'),
+    .custom((value) => {
+      const cleaned = value.replace(/[\s\-\(\)\.]/g, '');
+      const ethRegex = /^(?:\+251|00251|251|0)?([97]\d{8})$/;
+      if (!ethRegex.test(cleaned)) {
+        throw new Error('Please provide a valid Ethiopian phone number for calling (e.g. 0911234567, 0712345678, or +251 9...)');
+      }
+      return true;
+    }),
+
   body('notes')
     .optional()
     .trim()
