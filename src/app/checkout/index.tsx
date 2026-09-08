@@ -16,19 +16,22 @@ import { InputField } from '../../components/ui/InputField';
 import { PrimaryButton } from '../../components/ui/PrimaryButton';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { ApiClient } from '../../services/apiClient';
 import { Order } from '../../types';
 
 export default function CheckoutScreen() {
   const router = useRouter();
   const { user, token } = useAuth();
-  const { cart, total, clearCart } = useCart();
+  const { cart, total, totalItems, clearCart } = useCart();
+  const { t, formatPrice, isAmharic } = useLanguage();
 
   const [name, setName] = useState(user?.name || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [shippingAddress, setShippingAddress] = useState('');
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   const handlePlaceOrder = async () => {
     if (!token) {
@@ -160,7 +163,7 @@ export default function CheckoutScreen() {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Ionicons name="receipt-outline" size={20} color={ArtisanColors.primary} />
-            <Text style={styles.cardTitle}>Order Summary</Text>
+            <Text style={styles.cardTitle}>{t('orderSummary')}</Text>
           </View>
 
           {items.map((item) => (
@@ -168,36 +171,37 @@ export default function CheckoutScreen() {
               <Text style={styles.summaryItemName} numberOfLines={1}>
                 {item.quantity}x {item.name}
               </Text>
-              <Text style={styles.summaryItemPrice}>${item.subtotal.toFixed(2)}</Text>
+              <Text style={styles.summaryItemPrice}>{formatPrice(item.subtotal)}</Text>
             </View>
           ))}
 
           <View style={styles.divider} />
 
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Subtotal</Text>
-            <Text style={styles.totalValue}>${total.toFixed(2)}</Text>
+            <Text style={styles.totalLabel}>{t('subtotal', { count: totalItems })}</Text>
+            <Text style={styles.totalValue}>{formatPrice(total)}</Text>
           </View>
 
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Shipping</Text>
-            <Text style={[styles.totalValue, styles.freeShipping]}>Free</Text>
+            <Text style={styles.totalLabel}>{t('shipping')}</Text>
+            <Text style={[styles.totalValue, styles.freeShipping]}>{t('freeShipping')}</Text>
           </View>
 
           <View style={[styles.totalRow, styles.grandTotalRow]}>
-            <Text style={styles.grandTotalLabel}>Total Due</Text>
-            <Text style={styles.grandTotalValue}>${total.toFixed(2)}</Text>
+            <Text style={styles.grandTotalLabel}>{t('totalDue')}</Text>
+            <Text style={styles.grandTotalValue}>{formatPrice(total)}</Text>
           </View>
         </View>
 
         {/* Place Order Button */}
         <PrimaryButton
-          title={`Place Order • $${total.toFixed(2)}`}
+          title={`${t('placeOrder')} • ${formatPrice(total)}`}
           onPress={handlePlaceOrder}
           loading={isSubmitting}
           size="large"
           style={styles.submitButton}
         />
+
       </ScrollView>
     </SafeAreaView>
   );

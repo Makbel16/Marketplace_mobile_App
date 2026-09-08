@@ -12,7 +12,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ArtisanColors } from '../../constants/colors';
-import { ArtisanLogo } from '../../components/ui';
+import { ArtisanLogo, LanguageSwitcher } from '../../components/ui';
 import { SearchBar } from '../../components/marketplace/SearchBar';
 import { CategoryCard } from '../../components/marketplace/CategoryCard';
 import { ProductCard } from '../../components/marketplace/ProductCard';
@@ -22,15 +22,13 @@ import { ErrorState } from '../../components/feedback/ErrorState';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { Product, Category } from '../../types';
 import { ApiClient } from '../../services/apiClient';
-import { useCart } from '../../context/CartContext';
-import { useFavorites } from '../../context/FavoritesContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 type SortOption = 'newest' | 'price_asc' | 'price_desc' | 'rating';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { totalItems } = useCart();
-  const { favorites } = useFavorites();
+  const { t, isAmharic } = useLanguage();
 
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -127,44 +125,8 @@ export default function HomeScreen() {
             {/* Authentic Artisan Maker's Guild Logo */}
             <ArtisanLogo style={styles.logoFlex} />
 
-            {/* Boutique Quick Action Buttons (Wishlist & Cart) */}
-            <View style={styles.headerActions}>
-              <TouchableOpacity
-                style={styles.actionButton}
-                activeOpacity={0.7}
-                onPress={() => router.push('/(tabs)/favorites' as any)}>
-                <Ionicons
-                  name={favorites.length > 0 ? 'heart' : 'heart-outline'}
-                  size={20}
-                  color={favorites.length > 0 ? ArtisanColors.primary : ArtisanColors.text}
-                />
-                {favorites.length > 0 && (
-                  <View style={styles.actionBadge}>
-                    <Text style={styles.actionBadgeText}>
-                      {favorites.length > 99 ? '99+' : favorites.length}
-                    </Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.actionButton, styles.cartButton]}
-                activeOpacity={0.7}
-                onPress={() => router.push('/(tabs)/cart' as any)}>
-                <Ionicons
-                  name={totalItems > 0 ? 'bag-handle' : 'bag-handle-outline'}
-                  size={20}
-                  color={totalItems > 0 ? ArtisanColors.primary : ArtisanColors.text}
-                />
-                {totalItems > 0 && (
-                  <View style={[styles.actionBadge, styles.cartBadge]}>
-                    <Text style={styles.actionBadgeText}>
-                      {totalItems > 99 ? '99+' : totalItems}
-                    </Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-            </View>
+            {/* Language Switcher (🇬🇧 English / 🇪🇹 አማርኛ) */}
+            <LanguageSwitcher />
           </View>
         </View>
 
@@ -177,6 +139,7 @@ export default function HomeScreen() {
             onChangeText={setSearch}
             onSubmit={() => loadData()}
             onClear={() => setSearch('')}
+            placeholder={t('searchPlaceholder')}
           />
         </View>
 
@@ -188,30 +151,30 @@ export default function HomeScreen() {
             <View style={styles.heroContent}>
               <View style={styles.heroBadge}>
                 <Ionicons name="ribbon-outline" size={12} color={ArtisanColors.gold} />
-                <Text style={styles.heroBadgeText}>HANDMADE HERITAGE</Text>
+                <Text style={styles.heroBadgeText}>{t('heroBadge')}</Text>
               </View>
 
               <Text style={styles.heroHeading}>
-                Masterpieces with Soul, Direct from the Maker.
+                {t('heroHeading')}
               </Text>
 
               <Text style={styles.heroSubheading}>
-                Every purchase sustains master potters, weavers, and leatherworkers worldwide.
+                {t('heroSubheading')}
               </Text>
 
               {/* Trust Badges - Clean Vector Icons */}
               <View style={styles.heroTrustRow}>
                 <View style={styles.trustChip}>
                   <Ionicons name="hammer-outline" size={13} color="#FFFFFF" />
-                  <Text style={styles.trustChipText}>100% Handcrafted</Text>
+                  <Text style={styles.trustChipText}>{t('trustHandmade')}</Text>
                 </View>
                 <View style={styles.trustChip}>
                   <Ionicons name="leaf-outline" size={13} color="#FFFFFF" />
-                  <Text style={styles.trustChipText}>Eco-Conscious</Text>
+                  <Text style={styles.trustChipText}>{t('trustEco')}</Text>
                 </View>
                 <View style={styles.trustChip}>
                   <Ionicons name="shield-checkmark-outline" size={13} color="#FFFFFF" />
-                  <Text style={styles.trustChipText}>Fair Trade Verified</Text>
+                  <Text style={styles.trustChipText}>{t('trustFairTrade')}</Text>
                 </View>
               </View>
             </View>
@@ -226,19 +189,19 @@ export default function HomeScreen() {
             <View style={styles.sectionHeader}>
               <View style={styles.sectionTitleRow}>
                 <Ionicons name="color-palette-outline" size={18} color={ArtisanColors.primary} />
-                <Text style={styles.sectionTitle}>Explore by Craft</Text>
+                <Text style={styles.sectionTitle}>{t('exploreByCraft')}</Text>
               </View>
 
               {selectedCategory ? (
                 <TouchableOpacity
                   onPress={() => setSelectedCategory(null)}
                   style={styles.clearFilterBtn}>
-                  <Text style={styles.clearFilterText}>Reset Filter</Text>
+                  <Text style={styles.clearFilterText}>{t('resetFilter')}</Text>
                   <Ionicons name="close-circle" size={14} color={ArtisanColors.primary} />
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity onPress={() => router.push('/(tabs)/categories' as any)}>
-                  <Text style={styles.viewAllText}>View All ({categories.length}) →</Text>
+                  <Text style={styles.viewAllText}>{t('viewAll')} ({categories.length}) →</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -265,7 +228,7 @@ export default function HomeScreen() {
                     styles.allPillText,
                     !selectedCategory && styles.allPillTextActive,
                   ]}>
-                  All Crafts
+                  {t('allCrafts')}
                 </Text>
               </TouchableOpacity>
 
@@ -285,19 +248,19 @@ export default function HomeScreen() {
         {/* CONTENT STATES (LOADING / ERROR / EMPTY / PRODUCTS)          */}
         {/* ============================================================ */}
         {isLoading && !isRefreshing ? (
-          <LoadingState message="Discovering authentic artisan crafts..." />
+          <LoadingState message={t('loadingMessage')} />
         ) : error ? (
           <ErrorState message={error} onRetry={() => loadData()} />
         ) : products.length === 0 ? (
           <EmptyState
             icon="search-outline"
-            title="No Creations Found"
+            title={t('noProductsTitle')}
             message={
               search
                 ? `No handcrafted items matched "${search}". Try searching for pottery, leather, jewelry, or textiles.`
-                : 'No products are currently listed under this category.'
+                : t('noProductsMessage')
             }
-            actionTitle="Reset Filters"
+            actionTitle={t('resetFilter')}
             onAction={() => {
               setSearch('');
               setSelectedCategory(null);
@@ -316,11 +279,11 @@ export default function HomeScreen() {
                         ? `${categories.find((c) => c.slug === selectedCategory)?.name || 'Craft'} Vault`
                         : search
                         ? `Matches for "${search}"`
-                        : 'Artisan Creations'}
+                        : t('creationsTitle')}
                     </Text>
                   </View>
                   <Text style={styles.resultsCount}>
-                    {products.length} unique handmade item{products.length === 1 ? '' : 's'}
+                    {t('itemsCount', { count: products.length })}
                   </Text>
                 </View>
 
@@ -346,7 +309,7 @@ export default function HomeScreen() {
                         styles.sortChipText,
                         (sortBy === 'price_asc' || sortBy === 'price_desc') && styles.sortChipTextActive,
                       ]}>
-                      Price
+                      {t('sortByPrice')}
                     </Text>
                   </TouchableOpacity>
 
@@ -366,7 +329,7 @@ export default function HomeScreen() {
                         styles.sortChipText,
                         sortBy === 'rating' && styles.sortChipTextActive,
                       ]}>
-                      Top Rated
+                      {t('topRated')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -389,14 +352,18 @@ export default function HomeScreen() {
                 <View style={styles.sectionHeader}>
                   <View style={styles.sectionTitleRow}>
                     <Ionicons name="people-outline" size={18} color={ArtisanColors.primary} />
-                    <Text style={styles.sectionTitle}>Featured Guild Artisans</Text>
+                    <Text style={styles.sectionTitle}>{t('featuredArtisans')}</Text>
                   </View>
                 </View>
 
                 <ArtisanCard
                   shopName="Elena Clay Studio"
-                  location="Portland, OR • Master Potter"
-                  description="Hand-thrown stoneware, textured vases, and porcelain tableware with natural mineral glazes."
+                  location={isAmharic ? 'ፖርትላንድ • ሸክላ ሰሪ' : 'Portland, OR • Master Potter'}
+                  description={
+                    isAmharic
+                      ? 'በእጅ የተሰሩ የሸክላ እቃዎች፣ የአበባ ማስቀመጫዎች እና የተፈጥሮ መስታወቶች።'
+                      : 'Hand-thrown stoneware, textured vases, and porcelain tableware with natural mineral glazes.'
+                  }
                   profileImage="https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=400&q=80"
                   onPress={() => {
                     setSearch('Elena');
@@ -405,8 +372,12 @@ export default function HomeScreen() {
 
                 <ArtisanCard
                   shopName="Heritage Leather & Textiles"
-                  location="Addis Ababa • Guild Collective"
-                  description="Authentic vegetable-tanned leather goods, messenger bags, and heritage handwoven cotton."
+                  location={isAmharic ? 'አዲስ አበባ • የባለሙያዎች ህብረት' : 'Addis Ababa • Guild Collective'}
+                  description={
+                    isAmharic
+                      ? 'በተፈጥሮ የታነጹ እውነተኛ የቆዳ ቦርሳዎች፣ የሽመና ልብሶች እና ጥበቦች።'
+                      : 'Authentic vegetable-tanned leather goods, messenger bags, and heritage handwoven cotton.'
+                  }
                   profileImage="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80"
                   onPress={() => {
                     setSearch('Heritage');

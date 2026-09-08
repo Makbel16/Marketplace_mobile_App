@@ -16,12 +16,15 @@ import { LoadingState } from '../../components/feedback/LoadingState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { Order, OrderStatus } from '../../types';
 import { ApiClient } from '../../services/apiClient';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function OrderDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { formatPrice, isAmharic } = useLanguage();
   const [order, setOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -145,9 +148,9 @@ export default function OrderDetailsScreen() {
                 )}
                 <View style={styles.priceRow}>
                   <Text style={styles.unitPrice}>
-                    ${item.unitPrice.toFixed(2)} x {item.quantity}
+                    {formatPrice(item.unitPrice)} x {item.quantity}
                   </Text>
-                  <Text style={styles.subtotal}>${item.subtotal.toFixed(2)}</Text>
+                  <Text style={styles.subtotal}>{formatPrice(item.subtotal)}</Text>
                 </View>
               </View>
             </View>
@@ -156,10 +159,11 @@ export default function OrderDetailsScreen() {
           <View style={styles.divider} />
 
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Total Amount Due</Text>
-            <Text style={styles.totalValue}>${order.totalAmount.toFixed(2)}</Text>
+            <Text style={styles.summaryLabel}>{isAmharic ? 'የሚከፈል አጠቃላይ ድምር' : 'Total Amount Due'}</Text>
+            <Text style={styles.totalValue}>{formatPrice(order.totalAmount)}</Text>
           </View>
         </View>
+
 
         {/* Shipping & Contact Info */}
         <View style={styles.card}>

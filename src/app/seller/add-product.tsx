@@ -282,13 +282,14 @@ export default function AddProductScreen() {
         <View style={styles.rowFields}>
           <View style={styles.halfField}>
             <InputField
-              label="Price ($ USD)"
+              label="Price (ETB / ብር)"
               value={price}
               onChangeText={setPrice}
-              placeholder="48.50"
+              placeholder="1500"
               keyboardType="decimal-pad"
             />
           </View>
+
 
           <View style={styles.halfField}>
             <InputField

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ArtisanColors } from '../../constants/colors';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface ArtisanLogoProps {
   size?: 'small' | 'medium' | 'large';
@@ -14,12 +15,13 @@ export const ArtisanLogo: React.FC<ArtisanLogoProps> = ({
   showTagline = true,
   style,
 }) => {
+  const { t, isAmharic } = useLanguage();
   const isSmall = size === 'small';
   const isLarge = size === 'large';
 
   const emblemSize = isSmall ? 36 : isLarge ? 52 : 44;
   const iconSize = isSmall ? 18 : isLarge ? 26 : 22;
-  const titleFontSize = isSmall ? 17 : isLarge ? 24 : 20;
+  const titleFontSize = isSmall ? (isAmharic ? 15 : 17) : isLarge ? 24 : (isAmharic ? 18 : 20);
 
   return (
     <View style={[styles.container, style]}>
@@ -48,27 +50,26 @@ export const ArtisanLogo: React.FC<ArtisanLogoProps> = ({
       <View style={styles.textContainer}>
         {showTagline && (
           <View style={styles.eyebrowRow}>
-            <Text style={styles.eyebrowText}>ORIGINAL CRAFTS</Text>
-            <View style={styles.eyebrowDivider} />
-            <Text style={styles.eyebrowText}>EST. 2026</Text>
+            <Text style={styles.eyebrowText}>{t('estTag')}</Text>
           </View>
         )}
 
         <View style={styles.titleRow}>
-          <Text style={[styles.titleArtisan, { fontSize: titleFontSize }]}>ARTISAN </Text>
-          <Text style={[styles.titleMarketplace, { fontSize: titleFontSize }]}>MARKETPLACE</Text>
+          <Text style={[styles.titleArtisan, { fontSize: titleFontSize }]}>{t('brandArtisan')} </Text>
+          <Text style={[styles.titleMarketplace, { fontSize: titleFontSize }]}>{t('brandMarketplace')}</Text>
         </View>
 
         {showTagline && !isSmall && (
           <View style={styles.guildBadgeRow}>
             <Ionicons name="shield-checkmark" size={11} color={ArtisanColors.secondary} />
-            <Text style={styles.guildBadgeText}>Certified Guild of Independent Makers</Text>
+            <Text style={styles.guildBadgeText} numberOfLines={1}>{t('guildCertified')}</Text>
           </View>
         )}
       </View>
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

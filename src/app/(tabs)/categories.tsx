@@ -18,9 +18,11 @@ import { ErrorState } from '../../components/feedback/ErrorState';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { Category, Product } from '../../types';
 import { ApiClient } from '../../services/apiClient';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function CategoriesScreen() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
@@ -83,7 +85,7 @@ export default function CategoriesScreen() {
   if (isLoading && !isRefreshing) {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <LoadingState message="Loading craft categories..." />
+        <LoadingState message={t('loadingMessage')} />
       </SafeAreaView>
     );
   }
@@ -105,20 +107,21 @@ export default function CategoriesScreen() {
         <View style={styles.headerTopRow}>
           <View style={styles.eyebrowBadge}>
             <Ionicons name="color-palette-outline" size={12} color={ArtisanColors.gold} />
-            <Text style={styles.eyebrowText}>GUILDS & DISCIPLINES</Text>
+            <Text style={styles.eyebrowText}>{t('categoriesBadge')}</Text>
           </View>
           {categories.length > 0 && (
             <View style={styles.countBadge}>
-              <Text style={styles.countBadgeText}>{categories.length} Disciplines</Text>
+              <Text style={styles.countBadgeText}>{t('disciplinesCount', { count: categories.length })}</Text>
             </View>
           )}
         </View>
 
-        <Text style={styles.title}>Craft Collections</Text>
+        <Text style={styles.title}>{t('categoriesTitle')}</Text>
         <Text style={styles.subtitle}>
-          Explore centuries of heritage and handmade masterworks
+          {t('categoriesSubtitle')}
         </Text>
       </View>
+
 
       <FlatList
         data={categories}

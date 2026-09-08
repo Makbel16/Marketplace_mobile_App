@@ -18,6 +18,7 @@ import { LoadingState } from '../../components/feedback/LoadingState';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { OrderStatus } from '../../types';
 import { ApiClient } from '../../services/apiClient';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface SellerOrderItem {
   orderItemId: string;
@@ -37,9 +38,11 @@ interface SellerOrderItem {
 
 export default function SellerOrdersScreen() {
   const router = useRouter();
+  const { formatPrice, isAmharic } = useLanguage();
   const [orders, setOrders] = useState<SellerOrderItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
 
   useEffect(() => {
     loadSellerOrders();
@@ -169,9 +172,10 @@ export default function SellerOrdersScreen() {
                       {item.productName}
                     </Text>
                     <Text style={styles.productPrice}>
-                      ${item.unitPrice.toFixed(2)} x {item.quantity} = ${item.subtotal.toFixed(2)}
+                      {formatPrice(item.unitPrice)} x {item.quantity} = {formatPrice(item.subtotal)}
                     </Text>
                   </View>
+
                 </View>
 
                 <View style={styles.divider} />

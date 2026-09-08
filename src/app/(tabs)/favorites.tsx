@@ -15,10 +15,12 @@ import { ProductCard } from '../../components/marketplace/ProductCard';
 import { LoadingState } from '../../components/feedback/LoadingState';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { useFavorites } from '../../context/FavoritesContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function FavoritesScreen() {
   const router = useRouter();
   const { favorites, isLoading, refreshFavorites } = useFavorites();
+  const { t } = useLanguage();
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -29,28 +31,28 @@ export default function FavoritesScreen() {
         <View style={styles.headerTopRow}>
           <View style={styles.eyebrowBadge}>
             <Ionicons name="heart" size={11} color={ArtisanColors.primary} />
-            <Text style={styles.eyebrowText}>CURATED VAULT</Text>
+            <Text style={styles.eyebrowText}>{t('favoritesBadge')}</Text>
           </View>
 
           <View style={styles.countBadge}>
-            <Text style={styles.countBadgeText}>{favorites.length} Saved</Text>
+            <Text style={styles.countBadgeText}>{t('savedCount', { count: favorites.length })}</Text>
           </View>
         </View>
 
-        <Text style={styles.title}>Saved Treasures</Text>
+        <Text style={styles.title}>{t('favoritesTitle')}</Text>
         <Text style={styles.subtitle}>
-          Handpicked creations waiting for your personal collection
+          {t('favoritesSubtitle')}
         </Text>
       </View>
 
       {isLoading && favorites.length === 0 ? (
-        <LoadingState message="Loading your saved treasures..." />
+        <LoadingState message={t('loadingMessage')} />
       ) : favorites.length === 0 ? (
         <EmptyState
           icon="heart-outline"
-          title="Your Vault is Empty"
-          message="Explore unique pottery, woven textiles, and handcrafted jewelry, then tap the heart icon to save them here."
-          actionTitle="Explore Marketplace"
+          title={t('emptyFavoritesTitle')}
+          message={t('emptyFavoritesMessage')}
+          actionTitle={t('exploreMarketplace')}
           onAction={() => router.push('/(tabs)' as any)}
         />
       ) : (
@@ -78,6 +80,7 @@ export default function FavoritesScreen() {
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   safeArea: {

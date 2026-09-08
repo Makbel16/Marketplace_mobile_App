@@ -15,12 +15,14 @@ import { ArtisanColors } from '../../constants/colors';
 import { PrimaryButton } from '../../components/ui/PrimaryButton';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { useCart } from '../../context/CartContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { CartItem } from '../../types';
 
 export default function CartScreen() {
   const router = useRouter();
   const { cart, total, totalItems, updateQuantity, removeFromCart, clearCart, isLoading } =
     useCart();
+  const { t, formatPrice } = useLanguage();
 
   const renderCartItem = ({ item }: { item: CartItem }) => {
     const imageUrl =
@@ -42,7 +44,7 @@ export default function CartScreen() {
             {item.name}
           </Text>
 
-          <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
+          <Text style={styles.itemPrice}>{formatPrice(item.price)}</Text>
 
           <View style={styles.actionRow}>
             {/* Quantity Controls */}
@@ -71,7 +73,7 @@ export default function CartScreen() {
 
             {/* Subtotal & Delete */}
             <View style={styles.subtotalGroup}>
-              <Text style={styles.subtotalText}>${item.subtotal.toFixed(2)}</Text>
+              <Text style={styles.subtotalText}>{formatPrice(item.subtotal)}</Text>
               <TouchableOpacity
                 onPress={() => removeFromCart(item.id)}
                 style={styles.deleteButton}
@@ -97,23 +99,23 @@ export default function CartScreen() {
           <View style={styles.headerTopRow}>
             <View style={styles.eyebrowBadge}>
               <Ionicons name="bag-check" size={11} color={ArtisanColors.primary} />
-              <Text style={styles.eyebrowText}>ETHICAL CHECKOUT</Text>
+              <Text style={styles.eyebrowText}>{t('cartBadge')}</Text>
             </View>
             <View style={styles.countBadge}>
-              <Text style={styles.countBadgeText}>{totalItems} Items</Text>
+              <Text style={styles.countBadgeText}>{t('cartItemsCount', { count: totalItems })}</Text>
             </View>
           </View>
 
-          <Text style={styles.title}>Artisan Basket</Text>
+          <Text style={styles.title}>{t('cartTitle')}</Text>
           <Text style={styles.subtitle}>
-            Directly supporting independent master makers
+            {t('cartSubtitle')}
           </Text>
         </View>
 
         {items.length > 0 && (
           <TouchableOpacity onPress={clearCart} style={styles.clearCartButton}>
             <Ionicons name="trash-outline" size={15} color={ArtisanColors.danger} />
-            <Text style={styles.clearCartText}>Clear</Text>
+            <Text style={styles.clearCartText}>{t('clearCart')}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -122,7 +124,7 @@ export default function CartScreen() {
       {items.length > 0 && (
         <View style={styles.assuranceRibbon}>
           <Text style={styles.assuranceText}>
-            🌿 Direct Maker Support • 🛡️ Secure Checkout • 📦 Eco Packaging
+            {t('assuranceText')}
           </Text>
         </View>
       )}
@@ -130,9 +132,9 @@ export default function CartScreen() {
       {items.length === 0 ? (
         <EmptyState
           icon="bag-handle-outline"
-          title="Your Cart is Empty"
-          message="Browse unique handcrafted creations from authentic local artisans and add your favorite items here."
-          actionTitle="Start Shopping"
+          title={t('emptyCartTitle')}
+          message={t('emptyCartMessage')}
+          actionTitle={t('startShopping')}
           onAction={() => router.push('/(tabs)' as any)}
         />
       ) : (
@@ -148,22 +150,22 @@ export default function CartScreen() {
           {/* Checkout Bottom Sheet / Bar */}
           <View style={styles.checkoutBar}>
             <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Subtotal ({totalItems} items)</Text>
-              <Text style={styles.summaryValue}>${total.toFixed(2)}</Text>
+              <Text style={styles.summaryLabel}>{t('subtotal', { count: totalItems })}</Text>
+              <Text style={styles.summaryValue}>{formatPrice(total)}</Text>
             </View>
 
             <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Estimated Shipping</Text>
-              <Text style={[styles.summaryValue, styles.freeShipping]}>Free</Text>
+              <Text style={styles.summaryLabel}>{t('shipping')}</Text>
+              <Text style={[styles.summaryValue, styles.freeShipping]}>{t('freeShipping')}</Text>
             </View>
 
             <View style={[styles.summaryRow, styles.totalRow]}>
-              <Text style={styles.totalLabel}>Total</Text>
-              <Text style={styles.totalValue}>${total.toFixed(2)}</Text>
+              <Text style={styles.totalLabel}>{t('total')}</Text>
+              <Text style={styles.totalValue}>{formatPrice(total)}</Text>
             </View>
 
             <PrimaryButton
-              title="Proceed to Checkout"
+              title={t('checkoutBtn')}
               onPress={() => router.push('/checkout' as any)}
               size="large"
               loading={isLoading}
@@ -175,6 +177,7 @@ export default function CartScreen() {
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   safeArea: {

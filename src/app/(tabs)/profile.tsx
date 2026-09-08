@@ -14,16 +14,19 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ArtisanColors } from '../../constants/colors';
 import { PrimaryButton } from '../../components/ui/PrimaryButton';
+import { LanguageSwitcher } from '../../components/ui/LanguageSwitcher';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, isSeller, logout } = useAuth();
+  const { t, language } = useLanguage();
 
   const handleLogout = () => {
-    Alert.alert('Sign Out', 'Are you sure you want to sign out of your account?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign Out', style: 'destructive', onPress: () => logout() },
+    Alert.alert(t('signOut'), t('signOutConfirm'), [
+      { text: t('cancel'), style: 'cancel' },
+      { text: t('signOut'), style: 'destructive', onPress: () => logout() },
     ]);
   };
 
@@ -40,9 +43,9 @@ export default function ProfileScreen() {
         <View style={styles.header}>
           <View style={styles.eyebrowBadge}>
             <Ionicons name="person-circle-outline" size={12} color={ArtisanColors.gold} />
-            <Text style={styles.eyebrowText}>ARTISAN COMMUNITY</Text>
+            <Text style={styles.eyebrowText}>{t('profileBadge')}</Text>
           </View>
-          <Text style={styles.headerTitle}>Account & Guild</Text>
+          <Text style={styles.headerTitle}>{t('profileTitle')}</Text>
         </View>
 
         {/* User Card */}
@@ -77,18 +80,18 @@ export default function ProfileScreen() {
             <View style={styles.guestIconCircle}>
               <Ionicons name="person-outline" size={32} color={ArtisanColors.primary} />
             </View>
-            <Text style={styles.guestTitle}>Welcome, Craft Enthusiast!</Text>
+            <Text style={styles.guestTitle}>{t('welcomeEnthusiast')}</Text>
             <Text style={styles.guestSubtitle}>
-              Sign in to manage your orders, save items to your wishlist, or sell your own artisan creations.
+              {t('welcomeSubtitle')}
             </Text>
             <View style={styles.guestButtons}>
               <PrimaryButton
-                title="Sign In"
+                title={t('signIn')}
                 onPress={() => router.push('/(auth)/login' as any)}
                 style={styles.guestButton}
               />
               <PrimaryButton
-                title="Create Account"
+                title={t('createAccount')}
                 onPress={() => router.push('/(auth)/register' as any)}
                 variant="outline"
                 style={styles.guestButton}
@@ -96,6 +99,23 @@ export default function ProfileScreen() {
             </View>
           </View>
         )}
+
+        {/* Language Selection Row in Profile */}
+        <View style={styles.menuSection}>
+          <Text style={styles.sectionHeader}>{language === 'am' ? 'ቋንቋ እና ምርጫ' : 'Language & Preferences'}</Text>
+          <View style={styles.languageSettingRow}>
+            <View style={styles.settingLabelGroup}>
+              <View style={styles.menuIconCircle}>
+                <Ionicons name="globe-outline" size={20} color={ArtisanColors.primary} />
+              </View>
+              <View>
+                <Text style={styles.menuText}>{language === 'am' ? 'የመተግበሪያ ቋንቋ' : 'App Language'}</Text>
+                <Text style={styles.settingSubtext}>{language === 'am' ? 'አማርኛ (ኢትዮጵያ)' : 'English (UK/US)'}</Text>
+              </View>
+            </View>
+            <LanguageSwitcher />
+          </View>
+        </View>
 
         {/* Seller Studio Banner (if SELLER) */}
         {isSeller && (
@@ -108,9 +128,9 @@ export default function ProfileScreen() {
                 <Ionicons name="hammer-outline" size={24} color="#FFFFFF" />
               </View>
               <View style={styles.sellerTextContainer}>
-                <Text style={styles.sellerBannerTitle}>Artisan Studio</Text>
+                <Text style={styles.sellerBannerTitle}>{t('artisanStudio')}</Text>
                 <Text style={styles.sellerBannerSubtitle}>
-                  Manage {user?.sellerProfile?.shopName || 'your shop'}, inventory, & orders
+                  {t('manageStudio')}
                 </Text>
               </View>
             </View>
@@ -120,7 +140,7 @@ export default function ProfileScreen() {
 
         {/* Customer Account Actions */}
         <View style={styles.menuSection}>
-          <Text style={styles.sectionHeader}>My Marketplace</Text>
+          <Text style={styles.sectionHeader}>{t('myMarketplace')}</Text>
 
           <TouchableOpacity
             style={styles.menuItem}
@@ -128,7 +148,7 @@ export default function ProfileScreen() {
             <View style={styles.menuIconCircle}>
               <Ionicons name="receipt-outline" size={20} color={ArtisanColors.primary} />
             </View>
-            <Text style={styles.menuText}>Order History</Text>
+            <Text style={styles.menuText}>{t('orderHistory')}</Text>
             <Ionicons name="chevron-forward" size={18} color={ArtisanColors.textMuted} />
           </TouchableOpacity>
 
@@ -138,7 +158,7 @@ export default function ProfileScreen() {
             <View style={styles.menuIconCircle}>
               <Ionicons name="heart-outline" size={20} color={ArtisanColors.primary} />
             </View>
-            <Text style={styles.menuText}>Wishlist</Text>
+            <Text style={styles.menuText}>{t('wishlist')}</Text>
             <Ionicons name="chevron-forward" size={18} color={ArtisanColors.textMuted} />
           </TouchableOpacity>
 
@@ -148,7 +168,7 @@ export default function ProfileScreen() {
             <View style={styles.menuIconCircle}>
               <Ionicons name="bag-handle-outline" size={20} color={ArtisanColors.primary} />
             </View>
-            <Text style={styles.menuText}>Shopping Cart</Text>
+            <Text style={styles.menuText}>{t('shoppingCart')}</Text>
             <Ionicons name="chevron-forward" size={18} color={ArtisanColors.textMuted} />
           </TouchableOpacity>
         </View>
@@ -158,13 +178,13 @@ export default function ProfileScreen() {
           <View style={styles.becomeSellerCard}>
             <Ionicons name="sparkles" size={24} color={ArtisanColors.accent} />
             <View style={styles.becomeSellerText}>
-              <Text style={styles.becomeSellerTitle}>Sell Your Creations</Text>
+              <Text style={styles.becomeSellerTitle}>{t('sellCreations')}</Text>
               <Text style={styles.becomeSellerSubtitle}>
-                Join our collective of local craftsmen, potters, and weavers.
+                {t('sellSubtitle')}
               </Text>
             </View>
             <PrimaryButton
-              title="Open Shop"
+              title={t('openShop')}
               size="small"
               onPress={() => router.push('/(auth)/register?role=SELLER' as any)}
             />
@@ -175,9 +195,10 @@ export default function ProfileScreen() {
         {user && (
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Ionicons name="log-out-outline" size={20} color={ArtisanColors.danger} />
-            <Text style={styles.logoutText}>Sign Out</Text>
+            <Text style={styles.logoutText}>{t('signOut')}</Text>
           </TouchableOpacity>
         )}
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -448,4 +469,21 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: ArtisanColors.danger,
   },
+  languageSettingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+  },
+  settingLabelGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  settingSubtext: {
+    fontSize: 12,
+    color: ArtisanColors.textMuted,
+    marginTop: 2,
+  },
 });
+

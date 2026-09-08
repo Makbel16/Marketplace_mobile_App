@@ -12,6 +12,7 @@ import { Product } from '../../types';
 import { ArtisanColors } from '../../constants/colors';
 import { RatingStars } from '../ui';
 import { useFavorites } from '../../context/FavoritesContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface ProductCardProps {
   product: Product;
@@ -23,6 +24,7 @@ const CARD_WIDTH = (width - 44) / 2; // 2-column layout with 16px margins + 12px
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { formatPrice, isAmharic } = useLanguage();
   const favorited = isFavorite(product.id);
 
   const imageUrl =
@@ -47,15 +49,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) =>
         {/* Handmade Tag / Stock Badge */}
         {product.stock === 0 ? (
           <View style={[styles.statusBadge, styles.outOfStockBadge]}>
-            <Text style={styles.statusBadgeText}>Sold Out</Text>
+            <Text style={styles.statusBadgeText}>{isAmharic ? 'አልቋል' : 'Sold Out'}</Text>
           </View>
         ) : product.stock <= 5 ? (
           <View style={[styles.statusBadge, styles.lowStockBadge]}>
-            <Text style={styles.statusBadgeText}>{product.stock} Left</Text>
+            <Text style={styles.statusBadgeText}>
+              {isAmharic ? `${product.stock} ቀርቷል` : `${product.stock} Left`}
+            </Text>
           </View>
         ) : (
           <View style={[styles.statusBadge, styles.handmadeBadge]}>
-            <Text style={styles.handmadeBadgeText}>Handcrafted</Text>
+            <Text style={styles.handmadeBadgeText}>{isAmharic ? 'በእጅ የተሰራ' : 'Handcrafted'}</Text>
           </View>
         )}
 
@@ -92,7 +96,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) =>
         </View>
 
         <View style={styles.footerRow}>
-          <Text style={styles.price}>${product.price.toFixed(2)}</Text>
+          <Text style={styles.price}>{formatPrice(product.price)}</Text>
           <View style={styles.viewCircle}>
             <Ionicons name="arrow-forward" size={13} color={ArtisanColors.primary} />
           </View>
@@ -101,6 +105,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) =>
     </TouchableOpacity>
   );
 };
+
 
 const styles = StyleSheet.create({
   card: {

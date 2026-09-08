@@ -20,6 +20,7 @@ import { Product } from '../../types';
 import { ApiClient } from '../../services/apiClient';
 import { useCart } from '../../context/CartContext';
 import { useFavorites } from '../../context/FavoritesContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 const { width } = Dimensions.get('window');
 
@@ -28,6 +29,8 @@ export default function ProductDetailsScreen() {
   const router = useRouter();
   const { addToCart } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { t, formatPrice, isAmharic } = useLanguage();
+
 
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -170,10 +173,10 @@ export default function ProductDetailsScreen() {
                   product.stock === 0 ? styles.outOfStockText : styles.inStockText,
                 ]}>
                 {product.stock === 0
-                  ? 'Out of Stock'
+                  ? (isAmharic ? 'አልቋል' : 'Out of Stock')
                   : product.stock <= 5
-                  ? `Only ${product.stock} available`
-                  : 'In Stock'}
+                  ? (isAmharic ? `${product.stock} ብቻ ቀርቷል` : `Only ${product.stock} available`)
+                  : (isAmharic ? 'አለ' : 'In Stock')}
               </Text>
             </View>
           </View>
@@ -183,7 +186,7 @@ export default function ProductDetailsScreen() {
 
           {/* Rating & Price */}
           <View style={styles.priceRatingRow}>
-            <Text style={styles.productPrice}>${product.price.toFixed(2)}</Text>
+            <Text style={styles.productPrice}>{formatPrice(product.price)}</Text>
             <RatingStars
               rating={product.rating || 0}
               reviewCount={product.reviewCount}
@@ -204,7 +207,7 @@ export default function ProductDetailsScreen() {
                 contentFit="cover"
               />
               <View style={styles.artisanInfo}>
-                <Text style={styles.artisanLabel}>Crafted by</Text>
+                <Text style={styles.artisanLabel}>{isAmharic ? 'የሰራው ባለሙያ' : 'Crafted by'}</Text>
                 <Text style={styles.artisanName}>{product.seller.shopName}</Text>
                 {product.seller.location && (
                   <Text style={styles.artisanLocation}>{product.seller.location}</Text>
@@ -215,16 +218,16 @@ export default function ProductDetailsScreen() {
 
           {/* Description */}
           <View style={styles.sectionBlock}>
-            <Text style={styles.sectionHeader}>About This Craft</Text>
+            <Text style={styles.sectionHeader}>{isAmharic ? 'የጥበቡ ታሪክና ቅርስ' : 'About This Craft'}</Text>
             <Text style={styles.descriptionText}>{product.description}</Text>
           </View>
 
           {/* Customer Reviews */}
           <View style={styles.sectionBlock}>
             <View style={styles.reviewsHeaderRow}>
-              <Text style={styles.sectionHeader}>Customer Reviews</Text>
+              <Text style={styles.sectionHeader}>{isAmharic ? 'የደንበኛ ግምገማዎች' : 'Customer Reviews'}</Text>
               <Text style={styles.reviewsSummary}>
-                {product.rating ? `${product.rating.toFixed(1)} ★` : 'No reviews yet'} ({product.reviewCount || 0})
+                {product.rating ? `${product.rating.toFixed(1)} ★` : (isAmharic ? 'ግምገማ የለም' : 'No reviews yet')} ({product.reviewCount || 0})
               </Text>
             </View>
 
@@ -245,7 +248,9 @@ export default function ProductDetailsScreen() {
               ))
             ) : (
               <Text style={styles.noReviewsText}>
-                No customer reviews yet. Be the first to order and review this artisan craft!
+                {isAmharic
+                  ? 'እስካሁን ምንም ግምገማ አልተሰጠም። የመጀመሪያው ገምጋሚ ይሁኑ!'
+                  : 'No customer reviews yet. Be the first to order and review this artisan craft!'}
               </Text>
             )}
           </View>
@@ -282,7 +287,11 @@ export default function ProductDetailsScreen() {
 
         {/* Add to Cart Button */}
         <PrimaryButton
-          title={product.stock === 0 ? 'Out of Stock' : `Add to Cart • $${(product.price * quantity).toFixed(2)}`}
+          title={
+            product.stock === 0
+              ? (isAmharic ? 'አልቋል' : 'Out of Stock')
+              : `${isAmharic ? 'ወደ ጋሪ ጨምር' : 'Add to Cart'} • ${formatPrice(product.price * quantity)}`
+          }
           onPress={handleAddToCart}
           disabled={product.stock === 0}
           loading={isAdding}
@@ -290,6 +299,7 @@ export default function ProductDetailsScreen() {
           style={styles.addToCartButton}
         />
       </View>
+
     </SafeAreaView>
   );
 }

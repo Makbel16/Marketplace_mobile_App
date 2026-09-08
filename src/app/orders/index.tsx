@@ -17,11 +17,14 @@ import { EmptyState } from '../../components/feedback/EmptyState';
 import { Order, OrderStatus } from '../../types';
 import { ApiClient } from '../../services/apiClient';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function OrderHistoryScreen() {
   const router = useRouter();
   const { user } = useAuth();
+  const { formatPrice, isAmharic } = useLanguage();
   const [orders, setOrders] = useState<Order[]>([]);
+
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -143,16 +146,17 @@ export default function OrderHistoryScreen() {
                     <Text style={styles.itemName} numberOfLines={1}>
                       {it.quantity}x {it.productName}
                     </Text>
-                    <Text style={styles.itemPrice}>${it.subtotal.toFixed(2)}</Text>
+                    <Text style={styles.itemPrice}>{formatPrice(it.subtotal)}</Text>
                   </View>
                 ))}
 
                 <View style={styles.cardFooter}>
                   <Text style={styles.totalItemsText}>
-                    Total ({item.items.reduce((s, i) => s + i.quantity, 0)} items)
+                    {isAmharic ? 'ድምር' : 'Total'} ({item.items.reduce((s, i) => s + i.quantity, 0)} {isAmharic ? 'እቃዎች' : 'items'})
                   </Text>
-                  <Text style={styles.totalAmount}>${item.totalAmount.toFixed(2)}</Text>
+                  <Text style={styles.totalAmount}>{formatPrice(item.totalAmount)}</Text>
                 </View>
+
               </TouchableOpacity>
             );
           }}

@@ -19,11 +19,14 @@ import { LoadingState } from '../../components/feedback/LoadingState';
 import { Product } from '../../types';
 import { ApiClient } from '../../services/apiClient';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function SellerDashboardScreen() {
   const router = useRouter();
   const { user, isSeller } = useAuth();
+  const { formatPrice, isAmharic } = useLanguage();
   const [products, setProducts] = useState<Product[]>([]);
+
   const [orderCount, setOrderCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -229,8 +232,9 @@ export default function SellerDashboardScreen() {
                   <Text style={styles.productName} numberOfLines={1}>
                     {item.name}
                   </Text>
-                  <Text style={styles.productPrice}>${item.price.toFixed(2)}</Text>
+                  <Text style={styles.productPrice}>{formatPrice(item.price)}</Text>
                   <View style={styles.stockRow}>
+
                     <Text
                       style={[
                         styles.stockIndicator,

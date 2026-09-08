@@ -4,9 +4,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
 import { ArtisanColors } from '../../constants/colors';
 import { useCart } from '../../context/CartContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function TabLayout() {
   const { totalItems } = useCart();
+  const { t } = useLanguage();
 
   return (
     <Tabs
@@ -35,7 +37,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: t('tabHome'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'home' : 'home-outline'} size={24} color={color} />
           ),
@@ -44,7 +46,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="categories"
         options={{
-          title: 'Categories',
+          title: t('tabCategories'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'grid' : 'grid-outline'} size={24} color={color} />
           ),
@@ -53,7 +55,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="favorites"
         options={{
-          title: 'Favorites',
+          title: t('tabFavorites'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'heart' : 'heart-outline'} size={24} color={color} />
           ),
@@ -62,7 +64,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="cart"
         options={{
-          title: 'Cart',
+          title: t('tabCart'),
           tabBarBadge: totalItems > 0 ? totalItems : undefined,
           tabBarBadgeStyle: {
             backgroundColor: ArtisanColors.primary,
@@ -78,7 +80,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: t('tabProfile'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'person' : 'person-outline'} size={24} color={color} />
           ),
@@ -87,3 +89,4 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
