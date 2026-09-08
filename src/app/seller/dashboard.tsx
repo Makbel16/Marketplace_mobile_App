@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   RefreshControl,
   StyleSheet,
-  SafeAreaView,
   StatusBar,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -86,7 +86,7 @@ export default function SellerDashboardScreen() {
 
   if (!isSeller) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
         <View style={styles.nonSellerContainer}>
           <Text style={styles.nonSellerTitle}>Artisan Access Only</Text>
           <Text style={styles.nonSellerSubtitle}>
@@ -106,7 +106,7 @@ export default function SellerDashboardScreen() {
   const outOfStockProducts = products.filter((p) => p.stock === 0).length;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       {/* Header */}
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    paddingBottom: 40,
+    paddingBottom: 70,
   },
   shopCard: {
     backgroundColor: '#FFFFFF',

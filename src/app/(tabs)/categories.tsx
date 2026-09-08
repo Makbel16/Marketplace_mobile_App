@@ -5,9 +5,9 @@ import {
   FlatList,
   RefreshControl,
   StyleSheet,
-  SafeAreaView,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ArtisanColors } from '../../constants/colors';
@@ -84,7 +84,7 @@ export default function CategoriesScreen() {
 
   if (isLoading && !isRefreshing) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
         <LoadingState message={t('loadingMessage')} />
       </SafeAreaView>
     );
@@ -92,14 +92,14 @@ export default function CategoriesScreen() {
 
   if (error) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ErrorState message={error} onRetry={loadCategories} />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor={ArtisanColors.background} />
 
       {/* Branded Header */}
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: 10,
-    paddingBottom: 30,
+    paddingBottom: 110,
   },
   categoryProductsSection: {
     marginTop: 24,

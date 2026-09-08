@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  SafeAreaView,
   StatusBar,
   Alert,
 } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -32,6 +32,7 @@ export default function ProductDetailsScreen() {
   const { addToCart } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { t, formatPrice, isAmharic } = useLanguage();
+  const insets = useSafeAreaInsets();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -128,7 +129,7 @@ export default function ProductDetailsScreen() {
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       {/* Floating Top Navigation Bar */}
-      <View style={styles.topNav}>
+      <View style={[styles.topNav, { top: Math.max(insets.top, 12) + 8 }]}>
         <TouchableOpacity
           onPress={() => router.back()}
           style={styles.navButton}
@@ -148,7 +149,7 @@ export default function ProductDetailsScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingBottom: 110 + insets.bottom }]}>
         {/* Image Gallery */}
         <View style={styles.galleryContainer}>
           <Image
@@ -281,7 +282,7 @@ export default function ProductDetailsScreen() {
       </ScrollView>
 
       {/* Sticky Bottom Cart Bar */}
-      <View style={styles.bottomBar}>
+      <View style={[styles.bottomBar, { paddingBottom: Math.max(insets.bottom, 12) + 6 }]}>
         {/* Quantity Selector */}
         {product.stock > 0 && (
           <View style={styles.quantityPicker}>

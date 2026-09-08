@@ -6,9 +6,9 @@ import {
   TouchableOpacity,
   RefreshControl,
   StyleSheet,
-  SafeAreaView,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ArtisanColors } from '../../constants/colors';
@@ -63,7 +63,7 @@ export default function OrderHistoryScreen() {
 
   if (!user) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
         <EmptyState
           icon="lock-closed-outline"
           title="Sign In to View Orders"
@@ -76,7 +76,7 @@ export default function OrderHistoryScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       {/* Header */}
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: 16,
-    paddingBottom: 30,
+    paddingBottom: 60,
   },
   orderCard: {
     backgroundColor: '#FFFFFF',

@@ -6,11 +6,11 @@ import {
   TouchableOpacity,
   RefreshControl,
   StyleSheet,
-  SafeAreaView,
   StatusBar,
   Alert,
   Linking,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -105,7 +105,7 @@ export default function SellerOrdersScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       {/* Header */}
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: 16,
-    paddingBottom: 30,
+    paddingBottom: 70,
   },
   orderCard: {
     backgroundColor: '#FFFFFF',

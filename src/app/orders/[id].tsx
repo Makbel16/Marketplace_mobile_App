@@ -5,10 +5,10 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
   StatusBar,
   Linking,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -55,7 +55,7 @@ export default function OrderDetailsScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
         <LoadingState message="Retrieving order details..." />
       </SafeAreaView>
     );
@@ -63,7 +63,7 @@ export default function OrderDetailsScreen() {
 
   if (error || !order) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ErrorState message={error || 'Order not found'} onRetry={() => loadOrderDetails(id)} />
       </SafeAreaView>
     );
@@ -72,7 +72,7 @@ export default function OrderDetailsScreen() {
   const currentStep = getStepIndex(order.status);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       {/* Header */}
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    paddingBottom: 40,
+    paddingBottom: 70,
   },
   card: {
     backgroundColor: '#FFFFFF',

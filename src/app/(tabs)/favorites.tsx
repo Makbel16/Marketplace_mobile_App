@@ -5,9 +5,9 @@ import {
   FlatList,
   RefreshControl,
   StyleSheet,
-  SafeAreaView,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ArtisanColors } from '../../constants/colors';
@@ -23,7 +23,7 @@ export default function FavoritesScreen() {
   const { t } = useLanguage();
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor={ArtisanColors.background} />
 
       {/* Luxury Branded Header */}
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: 16,
-    paddingBottom: 30,
+    paddingBottom: 110,
     paddingTop: 8,
   },
   columnWrapper: {

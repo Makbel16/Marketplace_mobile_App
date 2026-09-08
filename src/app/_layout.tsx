@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider } from '../context/AuthContext';
 import { CartProvider } from '../context/CartContext';
 import { FavoritesProvider } from '../context/FavoritesContext';
@@ -15,7 +16,8 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <LanguageProvider>
+    <SafeAreaProvider>
+      <LanguageProvider>
       <AuthProvider>
         <CartProvider>
           <FavoritesProvider>
@@ -40,6 +42,7 @@ export default function RootLayout() {
         </CartProvider>
       </AuthProvider>
     </LanguageProvider>
+  </SafeAreaProvider>
   );
 }
 

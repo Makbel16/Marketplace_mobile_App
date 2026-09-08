@@ -2,6 +2,7 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArtisanColors } from '../../constants/colors';
 import { useCart } from '../../context/CartContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -9,6 +10,10 @@ import { useLanguage } from '../../context/LanguageContext';
 export default function TabLayout() {
   const { totalItems } = useCart();
   const { t } = useLanguage();
+  const insets = useSafeAreaInsets();
+
+  const bottomInset = Math.max(insets.bottom, Platform.OS === 'android' ? 12 : 24);
+  const tabHeight = 56 + bottomInset;
 
   return (
     <Tabs
@@ -20,10 +25,10 @@ export default function TabLayout() {
           backgroundColor: '#FFFFFF',
           borderTopColor: ArtisanColors.borderLight,
           borderTopWidth: 1,
-          height: Platform.OS === 'android' ? 64 : 84,
-          paddingBottom: Platform.OS === 'android' ? 10 : 28,
-          paddingTop: 8,
-          elevation: 8,
+          height: tabHeight,
+          paddingBottom: bottomInset - 4,
+          paddingTop: 6,
+          elevation: 10,
           shadowColor: ArtisanColors.shadow,
           shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 0.1,
