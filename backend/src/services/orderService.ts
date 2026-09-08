@@ -20,6 +20,16 @@ export class OrderService {
     return `ART-${dateStr}-${randomHex}`;
   }
 
+  private static normalizePhone(phone: string): string {
+    const cleaned = phone.replace(/[\s\-\(\)\.]/g, '');
+    const match = cleaned.match(/^(?:\+251|00251|251|0)?([97]\d{8})$/);
+    if (match) {
+      const num = match[1];
+      return `+251 ${num.slice(0, 2)} ${num.slice(2, 5)} ${num.slice(5)}`;
+    }
+    return phone.trim();
+  }
+
   /**
    * Create an order via atomic database transaction:
    * 1. Validates stock
@@ -100,16 +110,6 @@ export class OrderService {
         subtotal,
       });
     }
-
-  private static normalizePhone(phone: string): string {
-    const cleaned = phone.replace(/[\s\-\(\)\.]/g, '');
-    const match = cleaned.match(/^(?:\+251|00251|251|0)?([97]\d{8})$/);
-    if (match) {
-      const num = match[1];
-      return `+251 ${num.slice(0, 2)} ${num.slice(2, 5)} ${num.slice(5)}`;
-    }
-    return phone.trim();
-  }
 
     // Execute atomic transaction
     const order = await prisma.$transaction(async (tx) => {

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
+  Linking,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
@@ -174,10 +175,17 @@ export default function OrderDetailsScreen() {
             <Text style={styles.detailText}>{order.shippingAddress}</Text>
           </View>
 
-          <View style={styles.detailRow}>
-            <Ionicons name="call-outline" size={18} color={ArtisanColors.textMuted} />
-            <Text style={styles.detailText}>{order.phone}</Text>
-          </View>
+          <TouchableOpacity
+            style={styles.detailRow}
+            onPress={() => {
+              const dialNumber = order.phone.replace(/[\s\-\(\)]/g, '');
+              Linking.openURL(`tel:${dialNumber}`).catch(() => {});
+            }}>
+            <Ionicons name="call-outline" size={18} color="#0284C7" />
+            <Text style={[styles.detailText, { color: '#0284C7', fontWeight: '600' }]}>
+              {order.phone} ({isAmharic ? 'ለመደወል ይጫኑ' : 'Tap to call'})
+            </Text>
+          </TouchableOpacity>
 
           {order.notes ? (
             <View style={styles.detailRow}>

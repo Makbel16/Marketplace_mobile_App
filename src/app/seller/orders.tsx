@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   StatusBar,
   Alert,
+  Linking,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
@@ -185,7 +186,17 @@ export default function SellerOrdersScreen() {
                   <Text style={styles.customerLabel}>Customer & Shipping:</Text>
                   <Text style={styles.customerName}>{item.customerName}</Text>
                   <Text style={styles.customerAddress}>{item.shippingAddress}</Text>
-                  <Text style={styles.customerPhone}>Phone: {item.phone}</Text>
+                  <TouchableOpacity
+                    style={styles.callButton}
+                    onPress={() => {
+                      const dialNumber = item.phone.replace(/[\s\-\(\)]/g, '');
+                      Linking.openURL(`tel:${dialNumber}`).catch(() => {
+                        Alert.alert('Cannot Place Call', `Please dial ${item.phone} manually.`);
+                      });
+                    }}>
+                    <Ionicons name="call" size={14} color="#FFFFFF" />
+                    <Text style={styles.callButtonText}>Call: {item.phone}</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             );
@@ -315,5 +326,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: ArtisanColors.textMuted,
     marginTop: 4,
+  },
+  callButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: '#0284C7',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    marginTop: 8,
+    gap: 6,
+  },
+  callButtonText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
   },
 });
