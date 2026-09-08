@@ -70,9 +70,14 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/reviews', reviewRoutes);
 
-// Admin Web Dashboard
+// Admin Web Dashboard & Root redirect
 const publicPath = path.join(__dirname, '../public');
 app.use(express.static(publicPath));
+
+app.get('/', (req: Request, res: Response) => {
+  res.redirect('/admin');
+});
+
 app.get('/admin', (req: Request, res: Response) => {
   res.sendFile(path.join(publicPath, 'admin/index.html'));
 });
