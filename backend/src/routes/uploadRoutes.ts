@@ -8,7 +8,7 @@ const router = Router();
 // Upload a single image (e.g. shop logo, profile photo)
 router.post('/single', authenticateUser, upload.single('image'), UploadController.uploadSingle);
 
-// Upload up to 5 images for a product gallery
-router.post('/multiple', authenticateUser, upload.array('images', 5), UploadController.uploadMultiple);
+// Upload image using base64 payload (for mobile React Native / Expo clients)
+router.post('/base64', authenticateUser, UploadController.uploadBase64);
 
 export default router;

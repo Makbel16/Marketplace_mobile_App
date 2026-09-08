@@ -93,13 +93,14 @@ export default function AddProductScreen() {
         mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.85,
+        quality: 0.8,
+        base64: true,
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const asset = result.assets[0];
         setPreviewUri(asset.uri);
-        await uploadImageFile(asset.uri);
+        await uploadImageBase64(asset);
       }
     } catch (err: any) {
       Alert.alert('Image Selection Error', err.message || 'Could not choose image');
@@ -123,13 +124,14 @@ export default function AddProductScreen() {
       const result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.85,
+        quality: 0.8,
+        base64: true,
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const asset = result.assets[0];
         setPreviewUri(asset.uri);
-        await uploadImageFile(asset.uri);
+        await uploadImageBase64(asset);
       }
     } catch (err: any) {
       Alert.alert('Camera Error', err.message || 'Could not capture photo');
@@ -137,31 +139,32 @@ export default function AddProductScreen() {
   };
 
   /**
-   * Upload image file buffer to backend /api/upload/single
+   * Upload image to backend via /api/upload/base64 using pure JSON (immune to FormData bugs)
    */
-  const uploadImageFile = async (localUri: string) => {
+  const uploadImageBase64 = async (asset: ImagePicker.ImagePickerAsset) => {
     setIsUploadingImage(true);
     try {
-      const filename = localUri.split('/').pop() || `craft-${Date.now()}.jpg`;
-      const match = /\.(\w+)$/.exec(filename);
-      const type = match ? `image/${match[1]}` : 'image/jpeg';
+      if (!asset.base64) {
+        throw new Error('Image data could not be read.');
+      }
 
-      const formData = new FormData();
-      formData.append('image', {
-        uri: localUri,
-        name: filename,
-        type,
-      } as any);
+      const filename = asset.fileName || `craft-${Date.now()}.jpg`;
+      const mimeType = asset.mimeType || 'image/jpeg';
 
       const token = await AsyncStorage.getItem('auth_token');
-      const uploadUrl = `${API_BASE_URL}/upload/single`;
+      const uploadUrl = `${API_BASE_URL}/upload/base64`;
 
       const response = await fetch(uploadUrl, {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: token ? `Bearer ${token}` : '',
         },
-        body: formData,
+        body: JSON.stringify({
+          base64: asset.base64,
+          filename,
+          mimeType,
+        }),
       });
 
       const json = await response.json();
@@ -174,7 +177,10 @@ export default function AddProductScreen() {
       setPreviewUri(uploadedUrl);
       Alert.alert('Upload Complete! 📸', 'Craft image uploaded and ready for publishing.');
     } catch (err: any) {
-      Alert.alert('Upload Error', `${err.message || 'Could not upload image'}. You can still use a preset craft photo.`);
+      Alert.alert(
+        'Upload Error',
+        `${err.message || 'Could not upload image'}. You can still use a preset craft photo.`
+      );
     } finally {
       setIsUploadingImage(false);
     }

@@ -91,4 +91,48 @@ export class UploadController {
       next(error);
     }
   }
+
+  /**
+   * Upload image sent as base64 string (Ideal for React Native / Expo to prevent FormData bugs)
+   */
+  static async uploadBase64(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { base64, filename, mimeType } = req.body;
+      if (!base64) {
+        throw new AppError('No base64 image data provided.', 400);
+      }
+
+      // Clean base64 data URL prefix if present
+      const cleanBase64 = base64.replace(/^data:image\/\w+;base64,/, '');
+      const buffer = Buffer.from(cleanBase64, 'base64');
+
+      const fileObj: Express.Multer.File = {
+        buffer,
+        originalname: filename || `craft-${Date.now()}.jpg`,
+        mimetype: mimeType || 'image/jpeg',
+      } as any;
+
+      let result: { imageUrl: string; publicId: string };
+      const isCloudinaryConfigured =
+        config.cloudinary.cloudName &&
+        config.cloudinary.cloudName !== 'YOUR_CLOUDINARY_CLOUD_NAME' &&
+        config.cloudinary.apiKey &&
+        config.cloudinary.apiKey !== 'YOUR_CLOUDINARY_API_KEY';
+
+      if (isCloudinaryConfigured) {
+        try {
+          const folder = (req.query.folder as string) || 'artisan_marketplace/products';
+          result = await CloudinaryService.uploadBuffer(buffer, folder);
+        } catch {
+          result = await saveLocally(req, fileObj);
+        }
+      } else {
+        result = await saveLocally(req, fileObj);
+      }
+
+      return sendSuccess(res, 'Image uploaded successfully', result, 201);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
